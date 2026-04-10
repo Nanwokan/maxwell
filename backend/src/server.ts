@@ -1,11 +1,13 @@
 import { app } from './app';
 import { connectToDatabase, disconnectFromDatabase } from './config/database';
 import { env } from './config/env';
+import { ensureBootstrapAdminUser } from './lib/bootstrap-admin';
 
 let server: ReturnType<typeof app.listen> | null = null;
 
 async function bootstrap(): Promise<void> {
   await connectToDatabase();
+  await ensureBootstrapAdminUser();
 
   server = app.listen(env.PORT, () => {
     console.log(`[api] listening on port ${env.PORT}`);

@@ -30,6 +30,9 @@ Copy `.env.example` to `.env` and configure:
 - `SEED_ADMIN_EMAIL`
 - `SEED_ADMIN_PASSWORD`
 
+On startup, the API automatically creates or updates the admin account from
+`SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` (role forced to `super_admin`).
+
 For destructive seed:
 - `SEED_RESET_CONTENT=true` (mandatory)
 - `ALLOW_DESTRUCTIVE_SEED=true` (mandatory only in production)
