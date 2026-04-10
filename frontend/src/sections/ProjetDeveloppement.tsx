@@ -26,68 +26,74 @@ const ProjetDeveloppement = ({
   const pillarsRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: 1,
-        },
-      });
+    const mm = gsap.matchMedia();
 
-      scrollTl.fromTo(
-        imagePanelRef.current,
-        { x: '-60vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0
-      );
+    mm.add('(min-width: 1024px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: '+=180%',
+            pin: true,
+            scrub: 1,
+          },
+        });
 
-      scrollTl.fromTo(
-        accentStripeRef.current,
-        { x: '-6vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0.05
-      );
+        scrollTl.fromTo(
+          imagePanelRef.current,
+          { x: '-60vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0
+        );
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { x: '18vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0.1
-      );
+        scrollTl.fromTo(
+          accentStripeRef.current,
+          { x: '-6vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0.05
+        );
 
-      scrollTl.fromTo(
-        pillarsRef.current?.children || [],
-        { y: '6vh', opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.02, ease: 'none' },
-        0.15
-      );
+        scrollTl.fromTo(
+          contentRef.current,
+          { x: '18vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0.1
+        );
 
-      scrollTl.fromTo(
-        imagePanelRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-20vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          pillarsRef.current?.children || [],
+          { y: '6vh', opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.02, ease: 'none' },
+          0.15
+        );
 
-      scrollTl.fromTo(
-        accentStripeRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-6vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          imagePanelRef.current,
+          { x: 0, opacity: 1 },
+          { x: '-20vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { y: 0, opacity: 1 },
-        { y: '-8vh', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-    }, sectionRef);
+        scrollTl.fromTo(
+          accentStripeRef.current,
+          { x: 0, opacity: 1 },
+          { x: '-6vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-    return () => ctx.revert();
+        scrollTl.fromTo(
+          contentRef.current,
+          { y: 0, opacity: 1 },
+          { y: '-8vh', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
+      }, sectionRef);
+
+      return () => ctx.revert();
+    });
+
+    return () => mm.revert();
   }, []);
 
   const developmentCtaTarget = sanitizeAnchorOrLink(development.cta.target, '#competences');
@@ -96,8 +102,7 @@ const ProjetDeveloppement = ({
     <section ref={sectionRef} id="projet" className="section-pinned relative z-90 bg-[#0B0F17]">
       <div
         ref={imagePanelRef}
-        className="absolute top-0 left-0 h-full w-[56vw]"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 0 100%)' }}
+        className="relative h-[42vh] min-h-[250px] w-full lg:absolute lg:left-0 lg:top-0 lg:h-full lg:w-[56vw] lg:[clip-path:polygon(0_0,100%_0,85%_100%,0_100%)]"
       >
         <img src={development.imageUrl} alt={development.title} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0B0F17]/50" />
@@ -105,12 +110,11 @@ const ProjetDeveloppement = ({
 
       <div
         ref={accentStripeRef}
-        className="absolute top-0 left-[54vw] h-full w-[2.2vw] bg-accent"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%, 0 100%)' }}
+        className="absolute left-[54vw] top-0 hidden h-full w-[2.2vw] bg-accent lg:block lg:[clip-path:polygon(0_0,100%_0,50%_100%,0_100%)]"
       />
 
-      <div className="absolute top-0 right-0 flex h-full w-[44vw] items-center bg-[#0B0F17]">
-        <div ref={contentRef} className="px-8 lg:px-[4vw]">
+      <div className="relative z-10 bg-[#0B0F17] px-5 py-10 sm:px-8 lg:absolute lg:right-0 lg:top-0 lg:flex lg:h-full lg:w-[44vw] lg:items-center lg:px-0 lg:py-0">
+        <div ref={contentRef} className="lg:px-[4vw]">
           <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
             {development.eyebrow}
           </span>

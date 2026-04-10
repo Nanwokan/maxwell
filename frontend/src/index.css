@@ -142,7 +142,7 @@
   }
   
   .section-pinned {
-    @apply w-screen h-screen relative overflow-hidden;
+    @apply relative overflow-hidden w-full min-h-screen lg:w-screen lg:h-screen;
   }
   
   .card-dark {

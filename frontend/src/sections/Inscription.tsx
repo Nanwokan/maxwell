@@ -97,68 +97,74 @@ const Inscription = ({
   }, [categories]);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: 1,
-        },
-      });
+    const mm = gsap.matchMedia();
 
-      scrollTl.fromTo(
-        imagePanelRef.current,
-        { x: '60vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0
-      );
+    mm.add('(min-width: 1024px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: '+=180%',
+            pin: true,
+            scrub: 1,
+          },
+        });
 
-      scrollTl.fromTo(
-        accentStripeRef.current,
-        { x: '6vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0.05
-      );
+        scrollTl.fromTo(
+          imagePanelRef.current,
+          { x: '60vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0
+        );
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { x: '-18vw', opacity: 0 },
-        { x: 0, opacity: 1, ease: 'none' },
-        0.1
-      );
+        scrollTl.fromTo(
+          accentStripeRef.current,
+          { x: '6vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0.05
+        );
 
-      scrollTl.fromTo(
-        stepsRef.current?.children || [],
-        { y: '4vh', opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.02, ease: 'none' },
-        0.15
-      );
+        scrollTl.fromTo(
+          contentRef.current,
+          { x: '-18vw', opacity: 0 },
+          { x: 0, opacity: 1, ease: 'none' },
+          0.1
+        );
 
-      scrollTl.fromTo(
-        imagePanelRef.current,
-        { x: 0, opacity: 1 },
-        { x: '20vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          stepsRef.current?.children || [],
+          { y: '4vh', opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.02, ease: 'none' },
+          0.15
+        );
 
-      scrollTl.fromTo(
-        accentStripeRef.current,
-        { x: 0, opacity: 1 },
-        { x: '6vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          imagePanelRef.current,
+          { x: 0, opacity: 1 },
+          { x: '20vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { y: 0, opacity: 1 },
-        { y: '-8vh', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
-    }, sectionRef);
+        scrollTl.fromTo(
+          accentStripeRef.current,
+          { x: 0, opacity: 1 },
+          { x: '6vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-    return () => ctx.revert();
+        scrollTl.fromTo(
+          contentRef.current,
+          { y: 0, opacity: 1 },
+          { y: '-8vh', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
+      }, sectionRef);
+
+      return () => ctx.revert();
+    });
+
+    return () => mm.revert();
   }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -191,8 +197,8 @@ const Inscription = ({
 
   return (
     <section ref={sectionRef} id="inscription" className="section-pinned relative z-40 bg-[#0B0F17]">
-      <div className="absolute top-0 left-0 flex h-full w-[44vw] items-center bg-[#0B0F17]">
-        <div ref={contentRef} className="px-8 lg:px-[6vw]">
+      <div className="relative z-10 bg-[#0B0F17] px-5 py-10 sm:px-8 lg:absolute lg:left-0 lg:top-0 lg:flex lg:h-full lg:w-[44vw] lg:items-center lg:px-0 lg:py-0">
+        <div ref={contentRef} className="lg:px-[6vw]">
           <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
             Inscription
           </span>
@@ -220,13 +226,13 @@ const Inscription = ({
           <div className="flex flex-col gap-4 sm:flex-row">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="btn-primary flex h-auto items-center justify-center gap-2 px-6 py-3 text-base text-[#0B0F17]">
+                <Button className="btn-primary flex h-auto w-full items-center justify-center gap-2 px-6 py-3 text-base text-[#0B0F17] sm:w-auto">
                   Pre-inscription
                   <ArrowRight size={18} />
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="max-h-[calc(100vh-2rem)] max-w-2xl gap-0 overflow-hidden rounded-[1.5rem] border-white/10 bg-[#0F1724] p-0 text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
+              <DialogContent className="max-h-[calc(100vh-2rem)] w-[calc(100%-1.5rem)] gap-0 overflow-hidden rounded-[1.5rem] border-white/10 bg-[#0F1724] p-0 text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:w-full sm:max-w-2xl">
                 <div className="border-b border-white/10 px-6 py-5 lg:px-8">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-extrabold tracking-tight text-white">
@@ -403,7 +409,7 @@ const Inscription = ({
 
             <a
               href="#contact"
-              className="flex items-center justify-center gap-2 text-[#A9B3C2] transition-colors hover:text-accent"
+              className="flex w-full items-center justify-center gap-2 text-[#A9B3C2] transition-colors hover:text-accent sm:w-auto"
             >
               <FileText size={18} />
               Demander la fiche medicale
@@ -414,14 +420,12 @@ const Inscription = ({
 
       <div
         ref={accentStripeRef}
-        className="absolute top-0 left-[42vw] h-full w-[2.2vw] bg-accent"
-        style={{ clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 0 100%)' }}
+        className="absolute left-[42vw] top-0 hidden h-full w-[2.2vw] bg-accent lg:block lg:[clip-path:polygon(50%_0,100%_0,100%_100%,0_100%)]"
       />
 
       <div
         ref={imagePanelRef}
-        className="absolute top-0 right-0 h-full w-[56vw]"
-        style={{ clipPath: 'polygon(15% 0, 100% 0, 100% 100%, 0 100%)' }}
+        className="relative h-[42vh] min-h-[250px] w-full lg:absolute lg:right-0 lg:top-0 lg:h-full lg:w-[56vw] lg:[clip-path:polygon(15%_0,100%_0,100%_100%,0_100%)]"
       >
         <img
           src="/images/inscription-joueur.jpg"

@@ -79,51 +79,57 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
   }, []);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: 1,
-          onLeaveBack: () => {
-            gsap.set([stripeRef.current, contentRef.current, accentPanelRef.current], {
-              opacity: 1,
-              x: 0,
-            });
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 1024px)', () => {
+      const ctx = gsap.context(() => {
+        const scrollTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: '+=180%',
+            pin: true,
+            scrub: 1,
+            onLeaveBack: () => {
+              gsap.set([stripeRef.current, contentRef.current, accentPanelRef.current], {
+                opacity: 1,
+                x: 0,
+              });
+            },
           },
-        },
-      });
+        });
 
-      scrollTl.fromTo(
-        contentRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-18vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          contentRef.current,
+          { x: 0, opacity: 1 },
+          { x: '-18vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-      scrollTl.fromTo(
-        stripeRef.current,
-        { x: 0, opacity: 1 },
-        { x: '-40vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          stripeRef.current,
+          { x: 0, opacity: 1 },
+          { x: '-40vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-      scrollTl.fromTo(
-        accentPanelRef.current,
-        { x: 0, opacity: 1 },
-        { x: '12vw', opacity: 0, ease: 'power2.in' },
-        0.7
-      );
+        scrollTl.fromTo(
+          accentPanelRef.current,
+          { x: 0, opacity: 1 },
+          { x: '12vw', opacity: 0, ease: 'power2.in' },
+          0.7
+        );
 
-      const backgroundImage = sectionRef.current?.querySelector('.hero-bg');
-      if (backgroundImage) {
-        scrollTl.fromTo(backgroundImage, { scale: 1 }, { scale: 1.06, ease: 'none' }, 0.7);
-      }
-    }, sectionRef);
+        const backgroundImage = sectionRef.current?.querySelector('.hero-bg');
+        if (backgroundImage) {
+          scrollTl.fromTo(backgroundImage, { scale: 1 }, { scale: 1.06, ease: 'none' }, 0.7);
+        }
+      }, sectionRef);
 
-    return () => ctx.revert();
+      return () => ctx.revert();
+    });
+
+    return () => mm.revert();
   }, []);
 
   const scrollToNext = () => {
@@ -155,12 +161,14 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
 
       <div
         ref={stripeRef}
-        className="absolute top-0 left-0 h-full w-[65vw] bg-[#121A26]/75"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 0 100%)' }}
+        className="absolute inset-y-0 left-0 hidden h-full w-[65vw] bg-[#121A26]/75 lg:block lg:[clip-path:polygon(0_0,100%_0,85%_100%,0_100%)]"
       />
 
-      <div ref={contentRef} className="absolute top-0 left-0 flex h-full w-full items-center">
-        <div className="max-w-3xl px-8 lg:px-[8vw]">
+      <div
+        ref={contentRef}
+        className="relative z-10 flex min-h-screen w-full items-center pb-16 pt-28 lg:absolute lg:left-0 lg:top-0 lg:h-full lg:min-h-0 lg:pb-0 lg:pt-0"
+      >
+        <div className="max-w-3xl px-5 sm:px-8 lg:px-[8vw]">
           <span
             ref={eyebrowRef}
             className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent"
@@ -170,7 +178,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
 
           <h1
             ref={headlineRef}
-            className="mb-6 text-5xl font-extrabold leading-[0.92] tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl"
+            className="mb-6 text-4xl font-extrabold leading-[0.92] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl"
           >
             <span className="word inline-block">{hero.titleMain}</span>{' '}
             <span className="word inline-block text-accent">{hero.titleAccent}</span>
@@ -178,7 +186,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
 
           <p
             ref={subheadlineRef}
-            className="mb-8 max-w-xl text-lg leading-relaxed text-[#A9B3C2] lg:text-xl"
+            className="mb-8 max-w-xl text-base leading-relaxed text-[#A9B3C2] sm:text-lg lg:text-xl"
           >
             {hero.subtitle}
           </p>
@@ -187,7 +195,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
             <a
               href={primaryTarget}
               onClick={(event) => handleCtaClick(event, primaryTarget)}
-              className="btn-primary flex items-center gap-2"
+              className="btn-primary flex w-full items-center justify-center gap-2 sm:w-auto"
             >
               {hero.ctaPrimary.label}
               <ArrowRight size={18} />
@@ -195,7 +203,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
             <a
               href={secondaryTarget}
               onClick={(event) => handleCtaClick(event, secondaryTarget)}
-              className="btn-outline"
+              className="btn-outline w-full text-center sm:w-auto"
             >
               {hero.ctaSecondary.label}
             </a>
@@ -205,8 +213,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
 
       <div
         ref={accentPanelRef}
-        className="absolute top-0 right-0 h-full w-[10vw] bg-accent/15"
-        style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)' }}
+        className="absolute inset-y-0 right-0 hidden h-full w-[10vw] bg-accent/15 lg:block lg:[clip-path:polygon(30%_0,100%_0,100%_100%,0_100%)]"
       >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <span
@@ -224,7 +231,7 @@ const Hero = ({ hero = defaultPublicHomepageData.homepage.hero }: HeroProps) => 
 
       <button
         onClick={scrollToNext}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-accent"
+        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-accent lg:block"
       >
         <ChevronDown size={32} />
       </button>
