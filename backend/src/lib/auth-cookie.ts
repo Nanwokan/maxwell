@@ -34,8 +34,8 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
 export function getAdminAuthCookieOptions(): CookieOptions {
   return {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/api/admin',
     maxAge: ADMIN_TOKEN_TTL_SECONDS * 1000,
   };
