@@ -1,4 +1,5 @@
 const DEFAULT_API_URL = 'http://localhost:4000';
+const ADMIN_API_PREFIX = '/api/admin';
 
 function normalizeBaseUrl(rawUrl: string): string {
   return rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
@@ -24,20 +25,31 @@ export class ApiError extends Error {
 }
 
 export const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL);
+let persistedAuthToken: string | null = null;
+
+export function setApiAuthToken(token: string | null | undefined): void {
+  const normalizedToken = typeof token === 'string' ? token.trim() : '';
+  persistedAuthToken = normalizedToken.length > 0 ? normalizedToken : null;
+}
 
 async function requestJson<TResponse>(
   path: string,
   { method = 'GET', payload, token, headers }: RequestOptions = {}
 ): Promise<TResponse> {
   const requestHeaders = new Headers(headers);
+  const normalizedToken = typeof token === 'string' ? token.trim() : '';
+  const authToken = normalizedToken.length > 0 ? normalizedToken : persistedAuthToken;
 
   if (payload !== undefined && !requestHeaders.has('Content-Type')) {
     requestHeaders.set('Content-Type', 'application/json');
   }
 
-  if (token) {
-    requestHeaders.set('Authorization', `Bearer ${token}`);
+  if (authToken && !requestHeaders.has('Authorization')) {
+    requestHeaders.set('Authorization', `Bearer ${authToken}`);
   }
+
+  const includeCredentials =
+    path.startsWith(ADMIN_API_PREFIX) && (!authToken || path === '/api/admin/auth/logout');
 
   let response: Response;
 
@@ -46,7 +58,7 @@ async function requestJson<TResponse>(
       method,
       headers: requestHeaders,
       body: payload === undefined ? undefined : JSON.stringify(payload),
-      credentials: 'include',
+      credentials: includeCredentials ? 'include' : 'omit',
     });
   } catch {
     const currentOrigin =

@@ -81,13 +81,21 @@ import { OverviewSection } from '@/admin/sections/OverviewSection';
 import { RegistrationsSection } from '@/admin/sections/RegistrationsSection';
 import { SettingsSection } from '@/admin/sections/SettingsSection';
 import { navigateToPublicRoute } from '../lib/app-route';
-import { ApiError, deleteJson, getJson, patchJson, postJson, API_BASE_URL } from '../lib/api';
+import {
+  ApiError,
+  deleteJson,
+  getJson,
+  patchJson,
+  postJson,
+  API_BASE_URL,
+  setApiAuthToken,
+} from '../lib/api';
 
 const sidebarSections: Array<{ key: SectionKey; label: string; icon: typeof LayoutDashboard }> = [
   { key: 'overview', label: 'Tableau de bord', icon: LayoutDashboard },
-  { key: 'settings', label: 'Paramètres du site', icon: Settings },
+  { key: 'settings', label: 'Parametres du site', icon: Settings },
   { key: 'homepage', label: 'Homepage', icon: Globe },
-  { key: 'news', label: 'Actualités', icon: Newspaper },
+  { key: 'news', label: 'Actualites', icon: Newspaper },
   { key: 'inbox', label: 'Inbox', icon: Bell },
   { key: 'messages', label: 'Messages', icon: Mail },
   { key: 'registrations', label: 'Inscriptions', icon: ClipboardList },
@@ -100,6 +108,10 @@ type PaginatedApiItemsResponse<TItem> = ApiItemsResponse<TItem> & {
     total: number;
     totalPages: number;
   };
+};
+
+type HandleApiErrorOptions = {
+  treat401AsSessionExpired?: boolean;
 };
 
 export default function AdminApp() {
@@ -141,8 +153,12 @@ export default function AdminApp() {
   }, []);
 
   const handleApiError = useCallback(
-    (error: unknown, fallbackMessage: string) => {
-      if (error instanceof ApiError && error.status === 401) {
+    (
+      error: unknown,
+      fallbackMessage: string,
+      { treat401AsSessionExpired = true }: HandleApiErrorOptions = {}
+    ) => {
+      if (treat401AsSessionExpired && error instanceof ApiError && error.status === 401) {
         handleUnauthorized();
         return;
       }
@@ -152,6 +168,10 @@ export default function AdminApp() {
     },
     [handleUnauthorized]
   );
+
+  useEffect(() => {
+    setApiAuthToken(session?.token ?? null);
+  }, [session?.token]);
 
   const loadAdminData = useCallback(
     async () => {
@@ -363,6 +383,7 @@ export default function AdminApp() {
 
       const nextSession = {
         user: response.user,
+        token: response.token,
       };
 
       persistSession(nextSession);
@@ -371,7 +392,9 @@ export default function AdminApp() {
       setLoginForm({ email: '', password: '' });
       toast.success('Connexion admin reussie.');
     } catch (error) {
-      handleApiError(error, 'Connexion admin impossible.');
+      handleApiError(error, 'Connexion admin impossible.', {
+        treat401AsSessionExpired: false,
+      });
     } finally {
       setIsSubmittingLogin(false);
     }

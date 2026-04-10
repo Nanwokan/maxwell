@@ -25,10 +25,12 @@ export type AdminUser = EntityWithId & {
 
 export type AdminSession = {
   user: AdminUser;
+  token?: string;
 };
 
 export type LoginResponse = {
   user: AdminUser;
+  token?: string;
 };
 
 export type ApiItemResponse<TItem> = {

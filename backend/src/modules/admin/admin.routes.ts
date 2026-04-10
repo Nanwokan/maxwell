@@ -417,6 +417,7 @@ adminRouter.post(
 
     res.json({
       user: sanitizeAdminUser(user),
+      token,
     });
   })
 );

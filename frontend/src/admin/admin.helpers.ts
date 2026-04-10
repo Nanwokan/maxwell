@@ -79,7 +79,15 @@ export function safeSessionRead(): AdminSession | null {
       return null;
     }
 
-    return parsed;
+    const normalizedToken =
+      typeof parsed.token === 'string' && parsed.token.trim().length > 0
+        ? parsed.token.trim()
+        : undefined;
+
+    return {
+      ...parsed,
+      token: normalizedToken,
+    };
   } catch {
     return null;
   }
