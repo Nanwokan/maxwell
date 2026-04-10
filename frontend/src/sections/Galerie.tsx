@@ -82,7 +82,7 @@ const Galerie = ({
 
   return (
     <section ref={sectionRef} id="galerie" className="relative z-70 bg-[#121A26] py-20 lg:py-32">
-      <div className="px-8 lg:px-[8vw]">
+      <div className="px-5 sm:px-8 lg:px-[8vw]">
         <div
           ref={headerRef}
           className="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between"

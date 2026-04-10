@@ -59,7 +59,7 @@ const Partenaires = ({ partners = defaultPublicHomepageData.partners }: Partenai
 
   return (
     <section ref={sectionRef} id="partenaires" className="relative z-80 bg-[#0B0F17] py-20 lg:py-32">
-      <div className="px-8 lg:px-[8vw]">
+      <div className="px-5 sm:px-8 lg:px-[8vw]">
         <div ref={headerRef} className="mx-auto mb-12 max-w-2xl text-center lg:mb-16">
           <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
             Soutiens

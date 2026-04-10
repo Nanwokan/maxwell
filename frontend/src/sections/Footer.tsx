@@ -59,7 +59,7 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
 
   return (
     <footer className="relative z-[130] bg-[#121A26] py-12 lg:py-16">
-      <div className="px-8 lg:px-[8vw]">
+      <div className="px-5 sm:px-8 lg:px-[8vw]">
         <div className="mb-12 flex flex-col border-b border-white/5 pb-12 lg:mb-0 lg:flex-row lg:items-center lg:justify-between">
           <div className="mb-6 flex items-center gap-3 lg:mb-0">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
