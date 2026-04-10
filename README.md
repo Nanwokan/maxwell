@@ -93,4 +93,4 @@ En production, ajouter aussi:
 - `src/`: frontend React
 - `public/`: assets statiques
 - `backend/src/`: API Express
-- `backend/src/models/`: schemas Mongoose
+- `backend/src/models/`: schemas Mongoosef794acecac12466d630309085681e1a87
