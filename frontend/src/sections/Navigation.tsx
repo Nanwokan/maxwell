@@ -133,11 +133,11 @@ const Navigation = ({ settings = defaultPublicHomepageData.settings }: Navigatio
         ref={navRef}
         className={`fixed top-0 left-0 right-0 z-[500] transition-all duration-500 ${
           isScrolled
-            ? 'bg-[#0B0F17]/90 backdrop-blur-md py-3'
-            : 'bg-transparent py-6'
+            ? 'bg-[#0B0F17]/90 backdrop-blur-md py-2.5 lg:py-3'
+            : 'bg-transparent py-4 lg:py-6'
         }`}
       >
-        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
+        <div className="flex w-full items-center justify-between px-5 sm:px-8 lg:px-12">
           {/* Logo */}
           <a
             href="#accueil"
@@ -147,8 +147,8 @@ const Navigation = ({ settings = defaultPublicHomepageData.settings }: Navigatio
             }}
             className="flex items-center gap-3"
           >
-            <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
-              <span className="text-[#0B0F17] font-bold text-lg">{settings.clubShortName}</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent sm:h-10 sm:w-10">
+              <span className="text-base font-bold text-[#0B0F17] sm:text-lg">{settings.clubShortName}</span>
             </div>
             <span className="font-bold text-lg hidden sm:block">{brandLabel}</span>
           </a>
