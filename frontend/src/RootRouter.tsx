@@ -1,9 +1,9 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 
-import { isAdminRoute, subscribeToRouteChange } from './lib/app-route';
+import { isAdminRoute, subscribeToRouteChange } from '@/lib/app-route';
 
-const PublicApp = lazy(() => import('./App'));
-const AdminApp = lazy(() => import('./admin/AdminApp'));
+const PublicApp = lazy(() => import('@/App'));
+const AdminApp = lazy(() => import('@/admin/AdminApp'));
 
 function AppFallback() {
   return <div className="min-h-screen bg-[#0B0F17]" />;
