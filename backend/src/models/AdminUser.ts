@@ -27,6 +27,22 @@ const adminUserSchema = new Schema(
     lastLoginAt: {
       type: Date,
     },
+    passwordResetCodeHash: {
+      type: String,
+      default: null,
+    },
+    passwordResetCodeExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    passwordResetSessionHash: {
+      type: String,
+      default: null,
+    },
+    passwordResetSessionExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -34,4 +50,3 @@ const adminUserSchema = new Schema(
 );
 
 export const AdminUserModel = models.AdminUser || model('AdminUser', adminUserSchema);
-

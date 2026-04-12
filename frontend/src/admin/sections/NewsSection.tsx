@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+﻿import type { Dispatch, SetStateAction } from 'react';
 import { Loader2, Plus, Save, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -37,12 +37,12 @@ export function NewsSection({
   return (
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <Surface
-        title="Bibliotheque d'actualites"
-        subtitle="Selectionne un article ou cree un nouveau brouillon"
+        title="Bibliothèque d'actualités"
+        subtitle="Sélectionne un article ou crée un nouveau brouillon"
         action={
           <Button
             type="button"
-            className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+            className="rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
             onClick={onStartCreatingNews}
           >
             <Plus className="h-4 w-4" />
@@ -62,11 +62,11 @@ export function NewsSection({
                 onClick={() => onStartEditingNews(item)}
                 className={`w-full rounded-2xl border p-4 text-left transition ${
                   isActive
-                    ? 'border-[#D7FF3B]/50 bg-[#D7FF3B]/10'
+                    ? 'border-[#FF8A1F]/50 bg-[#FF8A1F]/10'
                     : 'border-white/10 bg-[#101928] hover:bg-[#162131]'
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <p className="font-semibold text-white">{item.title}</p>
                     <p className="mt-1 text-sm text-[#8C97AB]">{item.slug}</p>
@@ -83,8 +83,8 @@ export function NewsSection({
       </Surface>
 
       <Surface
-        title={editingNewsId === 'new' ? 'Nouvelle actualite' : "Edition de l'actualite"}
-        subtitle="Titre, slug, statut, contenu et metadonnees"
+        title={editingNewsId === 'new' ? 'Nouvelle actualité' : "Édition de l'actualité"}
+        subtitle="Titre, slug, statut, contenu et métadonnées"
         action={
           <div className="flex flex-wrap gap-3">
             {editingNewsId && editingNewsId !== 'new' && (
@@ -100,7 +100,7 @@ export function NewsSection({
             )}
             <Button
               type="button"
-              className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+              className="rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
               onClick={onSaveNews}
               disabled={isSavingNews}
             >
@@ -121,8 +121,8 @@ export function NewsSection({
       >
         {!editingNewsId ? (
           <EmptyState
-            title="Selectionne un article"
-            description="Choisis une actualite a gauche ou lance la creation d'un nouveau brouillon."
+            title="Sélectionne un article"
+            description="Choisis une actualité à gauche ou lance la création d'un nouveau brouillon."
           />
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
@@ -151,11 +151,11 @@ export function NewsSection({
                 }
                 className={selectClassName}
               >
-                <option value="draft">draft</option>
-                <option value="published">published</option>
+                <option value="draft">Brouillon</option>
+                <option value="published">Publié</option>
               </select>
             </LabeledField>
-            <LabeledField label="Categorie">
+            <LabeledField label="Catégorie">
               <Input
                 value={newsForm.categoryLabel}
                 onChange={(event) =>
@@ -174,7 +174,7 @@ export function NewsSection({
                 className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white"
               />
             </LabeledField>
-            <LabeledField label="Cover URL" className="md:col-span-2">
+            <LabeledField label="URL de couverture" className="md:col-span-2">
               <Input
                 value={newsForm.coverUrl}
                 onChange={(event) =>
@@ -216,4 +216,6 @@ export function NewsSection({
     </div>
   );
 }
+
+
 

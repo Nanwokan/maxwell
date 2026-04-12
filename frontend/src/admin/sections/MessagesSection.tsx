@@ -1,4 +1,4 @@
-import { Archive, Bell, Mail, MessageCircle } from 'lucide-react';
+﻿import { Archive, Bell, Mail, MessageCircle } from 'lucide-react';
 
 import { EmptyState, MetricCard, Surface } from '@/admin/admin-ui';
 import type { ContactMessage } from '@/admin/admin.types';
@@ -45,21 +45,21 @@ export function MessagesSection({
         <MetricCard
           label="Messages lus"
           value={contactSummary.read}
-          detail="Deja consultes"
+          detail="Déjà consultés"
           icon={Bell}
           compact
         />
         <MetricCard
-          label="Messages replies"
+          label="Messages répondus"
           value={contactSummary.replied}
-          detail="Suivi engage"
+          detail="Suivi engagé"
           icon={MessageCircle}
           compact
         />
         <MetricCard
           label="Archives"
           value={contactSummary.archived}
-          detail="Classement termine"
+          detail="Classement terminé"
           icon={Archive}
           compact
         />
@@ -89,7 +89,7 @@ export function MessagesSection({
                       onChange={(event) =>
                         onUpdateContactStatus(messageId, event.target.value as ContactMessage['status'])
                       }
-                      className={`${selectClassName} max-w-[180px]`}
+                      className={`${selectClassName} w-full sm:w-auto sm:max-w-[180px]`}
                     >
                       {contactStatuses.map((status) => (
                         <option key={status} value={status}>
@@ -105,7 +105,7 @@ export function MessagesSection({
           ) : (
             <EmptyState
               title="Aucun message de contact"
-              description="Les nouveaux messages envoyes depuis le site apparaitront ici."
+              description="Les nouveaux messages envoyés depuis le site apparaîtront ici."
             />
           )}
         </div>
@@ -113,4 +113,5 @@ export function MessagesSection({
     </div>
   );
 }
+
 

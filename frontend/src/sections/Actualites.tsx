@@ -16,12 +16,12 @@ type ActualitesProps = {
 
 function formatNewsDate(value: string | null): string {
   if (!value) {
-    return 'Date a venir';
+    return 'Date à venir';
   }
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return 'Date a venir';
+    return 'Date à venir';
   }
 
   return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(date);
@@ -116,7 +116,7 @@ const Actualites = ({ article = defaultPublicHomepageData.latestNews[0] }: Actua
       <div className="relative z-10 bg-[#0B0F17] px-5 py-10 sm:px-8 lg:absolute lg:right-0 lg:top-0 lg:flex lg:h-full lg:w-[44vw] lg:items-center lg:px-0 lg:py-0">
         <div ref={contentRef} className="lg:px-[4vw]">
           <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
-            Actualites
+            Actualités
           </span>
 
           <h2 className="mb-4 text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -130,7 +130,7 @@ const Actualites = ({ article = defaultPublicHomepageData.latestNews[0] }: Actua
             </div>
             <div className="flex items-center gap-2">
               <Trophy size={16} className="text-accent" />
-              <span className="text-sm">{currentArticle.categoryLabel || 'Actualite'}</span>
+              <span className="text-sm">{currentArticle.categoryLabel || 'Actualité'}</span>
             </div>
           </div>
 

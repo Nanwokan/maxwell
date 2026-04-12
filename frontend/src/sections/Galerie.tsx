@@ -31,8 +31,8 @@ const Galerie = ({
   const filters: { label: string; value: FilterType }[] = [
     { label: 'Tout', value: 'tout' },
     { label: 'Matchs', value: 'matchs' },
-    { label: 'Entrainement', value: 'entrainement' },
-    { label: 'Evenements', value: 'evenements' },
+    { label: 'Entraînement', value: 'entrainement' },
+    { label: 'Événements', value: 'evenements' },
   ];
 
   const filteredImages =
@@ -89,7 +89,7 @@ const Galerie = ({
         >
           <div>
             <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
-              Medias
+              Médias
             </span>
             <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
               GALERIE
@@ -166,7 +166,7 @@ const Galerie = ({
           </button>
           <img
             src={selectedImage}
-            alt="Gallery"
+            alt="Galerie"
             className="max-h-[90vh] max-w-full rounded-lg object-contain"
             onClick={(event) => event.stopPropagation()}
           />

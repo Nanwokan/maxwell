@@ -33,6 +33,23 @@ export type LoginResponse = {
   token?: string;
 };
 
+export type ForgotPasswordResponse = {
+  ok: boolean;
+  message: string;
+  resetCode?: string;
+};
+
+export type VerifyResetCodeResponse = {
+  ok: boolean;
+  message: string;
+  resetSessionToken: string;
+};
+
+export type ResetPasswordResponse = {
+  ok: boolean;
+  message: string;
+};
+
 export type ApiItemResponse<TItem> = {
   item: TItem | null;
 };

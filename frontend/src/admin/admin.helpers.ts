@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   AdminSession,
   ContactMessage,
   CtaForm,
@@ -18,10 +18,10 @@ const SESSION_STORAGE_KEY = 'maxwell-admin-session';
 
 export const sectionLabels: Record<SectionKey, string> = {
   overview: "Vue d'ensemble",
-  settings: 'Parametres du site',
-  homepage: 'Contenu homepage',
-  news: 'Actualites',
-  inbox: 'Inbox',
+  settings: 'Paramètres du site',
+  homepage: "Contenu de la page d'accueil",
+  news: 'Actualités',
+  inbox: 'Boîte de réception',
   messages: 'Messages',
   registrations: 'Inscriptions',
 };
@@ -30,8 +30,8 @@ export const contactStatuses: ContactMessage['status'][] = ['new', 'read', 'repl
 export const contactStatusLabels: Record<ContactMessage['status'], string> = {
   new: 'Nouveau',
   read: 'Lu',
-  replied: 'Repondu',
-  archived: 'Archive',
+  replied: 'Répondu',
+  archived: 'Archivé',
 };
 
 export const registrationStatuses: Registration['status'][] = [
@@ -43,13 +43,13 @@ export const registrationStatuses: Registration['status'][] = [
 
 export const registrationStatusLabels: Record<Registration['status'], string> = {
   new: 'Nouveau',
-  validated: 'Valide',
-  rejected: 'Refuse',
-  archived: 'Archive',
+  validated: 'Validé',
+  rejected: 'Refusé',
+  archived: 'Archivé',
 };
 
 export const selectClassName =
-  'h-10 w-full rounded-xl border border-white/10 bg-[#141d2b] px-3 text-sm text-white outline-none transition focus:border-[#D7FF3B]';
+  'h-10 w-full rounded-xl border border-white/10 bg-[#141d2b] px-3 text-sm text-white outline-none transition focus:border-[#FF8A1F]';
 
 export function extractId(entity: EntityWithId): string {
   if (typeof entity.id === 'string' && entity.id.length > 0) {
@@ -412,3 +412,5 @@ export function createWhatsAppLink(phone: string): string | null {
 
   return `https://wa.me/${digits.startsWith('00') ? digits.slice(2) : digits}`;
 }
+
+

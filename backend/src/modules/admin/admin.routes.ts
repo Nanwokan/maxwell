@@ -1,6 +1,9 @@
+﻿import { createHash, randomBytes, randomInt } from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
 
+import { env } from '../../config/env';
+import { sendAdminResetCodeEmail } from '../../lib/admin-reset-email';
 import { asyncHandler } from '../../lib/async-handler';
 import {
   ADMIN_AUTH_COOKIE_NAME,
@@ -13,7 +16,7 @@ import { ensureObjectId } from '../../lib/mongoose-utils';
 import { hashPassword, verifyPassword } from '../../lib/password';
 import { isSafeAnchorOrLink, isSafeHttpUrl, isSafeLink } from '../../lib/safe-url';
 import { requireAuth, requireRole } from '../../middlewares/auth';
-import { loginRateLimit } from '../../middlewares/rate-limit';
+import { createRateLimit, loginRateLimit } from '../../middlewares/rate-limit';
 import { AdminUserModel } from '../../models/AdminUser';
 import { CategoryModel } from '../../models/Category';
 import { ContactMessageModel } from '../../models/ContactMessage';
@@ -47,6 +50,20 @@ const optionalUrlField = z
 const loginSchema = z.object({
   email: z.string().trim().email(),
   password: z.string().min(8),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().trim().email(),
+});
+
+const verifyResetCodeSchema = z.object({
+  email: z.string().trim().email(),
+  code: z.string().trim().regex(/^\d{6}$/),
+});
+
+const resetPasswordSchema = z.object({
+  resetSessionToken: z.string().trim().min(32).max(300),
+  password: z.string().min(12).max(120),
 });
 
 const legalLinkSchema = z.object({
@@ -321,6 +338,31 @@ const listQuerySchema = z.object({
 
 const contentRoles: AdminRole[] = ['super_admin', 'admin', 'editor'];
 const adminRoles: AdminRole[] = ['super_admin', 'admin'];
+const PASSWORD_RESET_CODE_TTL_MS = 15 * 60 * 1000;
+const PASSWORD_RESET_CODE_TTL_MINUTES = PASSWORD_RESET_CODE_TTL_MS / (60 * 1000);
+const PASSWORD_RESET_SESSION_TTL_MS = 15 * 60 * 1000;
+const PASSWORD_RESET_REQUEST_MESSAGE =
+  'Si un compte admin existe pour cet email, un code de réinitialisation a été envoyé.';
+const forgotPasswordRateLimit = createRateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  message: 'Trop de demandes de réinitialisation de mot de passe, veuillez réessayer plus tard.',
+  keyGenerator: (req) => {
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    return `${ip}:${email}`;
+  },
+});
+const verifyResetCodeRateLimit = createRateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 12,
+  message: 'Trop de tentatives de vérification, veuillez réessayer plus tard.',
+  keyGenerator: (req) => {
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : 'unknown';
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    return `${ip}:${email}`;
+  },
+});
 
 function mergeDefined(target: unknown, patch: Record<string, unknown>): void {
   const mutableTarget = target as Record<string, unknown>;
@@ -386,6 +428,14 @@ function getIdParam(value: string | string[] | undefined): string {
   throw new HttpError(400, 'Missing resource id');
 }
 
+function hashResetCode(email: string, code: string): string {
+  return createHash('sha256').update(`${email}:${code}`).digest('hex');
+}
+
+function hashResetSessionToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
 export const adminRouter = Router();
 
 adminRouter.post(
@@ -405,6 +455,10 @@ adminRouter.post(
     }
 
     user.lastLoginAt = new Date();
+    user.passwordResetCodeHash = null;
+    user.passwordResetCodeExpiresAt = null;
+    user.passwordResetSessionHash = null;
+    user.passwordResetSessionExpiresAt = null;
     await user.save();
 
     const token = signAdminToken({
@@ -426,6 +480,120 @@ adminRouter.post('/auth/logout', (_req, res) => {
   res.clearCookie(ADMIN_AUTH_COOKIE_NAME, getAdminAuthCookieClearOptions());
   res.status(204).send();
 });
+
+adminRouter.post(
+  '/auth/forgot-password',
+  forgotPasswordRateLimit,
+  asyncHandler(async (req, res) => {
+    const payload = forgotPasswordSchema.parse(req.body);
+    const normalizedEmail = payload.email.toLowerCase();
+    const user = await AdminUserModel.findOne({ email: normalizedEmail, isActive: true });
+    let resetCode: string | null = null;
+
+    if (user) {
+      resetCode = randomInt(0, 1_000_000).toString().padStart(6, '0');
+      user.passwordResetCodeHash = hashResetCode(normalizedEmail, resetCode);
+      user.passwordResetCodeExpiresAt = new Date(Date.now() + PASSWORD_RESET_CODE_TTL_MS);
+      user.passwordResetSessionHash = null;
+      user.passwordResetSessionExpiresAt = null;
+      await user.save();
+
+      try {
+        await sendAdminResetCodeEmail({
+          code: resetCode,
+          expiresInMinutes: PASSWORD_RESET_CODE_TTL_MINUTES,
+          toEmail: normalizedEmail,
+        });
+      } catch (error) {
+        user.passwordResetCodeHash = null;
+        user.passwordResetCodeExpiresAt = null;
+        user.passwordResetSessionHash = null;
+        user.passwordResetSessionExpiresAt = null;
+        await user.save();
+        throw new HttpError(
+          503,
+          error instanceof Error
+            ? `Impossible d'envoyer le code de réinitialisation: ${error.message}`
+            : "Impossible d'envoyer le code de réinitialisation."
+        );
+      }
+    }
+
+    if (resetCode && env.NODE_ENV !== 'production') {
+      console.info(`[admin-auth] password reset code for ${normalizedEmail}: ${resetCode}`);
+    }
+
+    res.json({
+      ok: true,
+      message: PASSWORD_RESET_REQUEST_MESSAGE,
+      ...(resetCode && env.NODE_ENV !== 'production' ? { resetCode } : {}),
+    });
+  })
+);
+
+adminRouter.post(
+  '/auth/verify-reset-code',
+  verifyResetCodeRateLimit,
+  asyncHandler(async (req, res) => {
+    const payload = verifyResetCodeSchema.parse(req.body);
+    const normalizedEmail = payload.email.toLowerCase();
+    const codeHash = hashResetCode(normalizedEmail, payload.code);
+
+    const user = await AdminUserModel.findOne({
+      email: normalizedEmail,
+      passwordResetCodeHash: codeHash,
+      passwordResetCodeExpiresAt: { $gt: new Date() },
+      isActive: true,
+    });
+
+    if (!user) {
+      throw new HttpError(400, 'Le code de vérification est invalide ou expiré.');
+    }
+
+    const resetSessionToken = randomBytes(32).toString('hex');
+    user.passwordResetSessionHash = hashResetSessionToken(resetSessionToken);
+    user.passwordResetSessionExpiresAt = new Date(Date.now() + PASSWORD_RESET_SESSION_TTL_MS);
+    user.passwordResetCodeHash = null;
+    user.passwordResetCodeExpiresAt = null;
+    await user.save();
+
+    res.json({
+      ok: true,
+      message: 'Code vérifié. Vous pouvez maintenant définir un nouveau mot de passe.',
+      resetSessionToken,
+    });
+  })
+);
+
+adminRouter.post(
+  '/auth/reset-password',
+  asyncHandler(async (req, res) => {
+    const payload = resetPasswordSchema.parse(req.body);
+    const sessionHash = hashResetSessionToken(payload.resetSessionToken);
+
+    const user = await AdminUserModel.findOne({
+      passwordResetSessionHash: sessionHash,
+      passwordResetSessionExpiresAt: { $gt: new Date() },
+      isActive: true,
+    });
+
+    if (!user) {
+      throw new HttpError(400, 'La session de réinitialisation est invalide ou expirée.');
+    }
+
+    user.passwordHash = await hashPassword(payload.password);
+    user.passwordResetCodeHash = null;
+    user.passwordResetCodeExpiresAt = null;
+    user.passwordResetSessionHash = null;
+    user.passwordResetSessionExpiresAt = null;
+    await user.save();
+
+    res.json({
+      ok: true,
+      message: 'Mot de passe réinitialisé. Vous pouvez maintenant vous connecter.',
+    });
+  })
+);
 
 adminRouter.use(requireAuth);
 
@@ -997,3 +1165,5 @@ adminRouter.patch(
     res.json({ item });
   })
 );
+
+

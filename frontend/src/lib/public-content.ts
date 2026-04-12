@@ -1,4 +1,4 @@
-export type PublicLegalLink = {
+﻿export type PublicLegalLink = {
   label: string;
   url: string;
   sortOrder: number;
@@ -157,9 +157,9 @@ export type PublicHomepageResponse = {
 };
 
 const defaultLegalLinks: PublicLegalLink[] = [
-  { label: 'Mentions legales', url: './legal/mentions-legales.html', sortOrder: 0 },
-  { label: 'Politique de confidentialite', url: './legal/politique-confidentialite.html', sortOrder: 1 },
-  { label: 'Credits', url: './legal/credits.html', sortOrder: 2 },
+  { label: 'Mentions légales', url: './legal/mentions-legales.html', sortOrder: 0 },
+  { label: 'Politique de confidentialité', url: './legal/politique-confidentialite.html', sortOrder: 1 },
+  { label: 'Crédits', url: './legal/credits.html', sortOrder: 2 },
 ];
 
 const defaultCta = (label = '', target = ''): PublicCta => ({ label, target });
@@ -172,7 +172,7 @@ export const defaultPublicHomepageData: PublicHomepageData = {
     seasonLabel: 'SAISON 2025-2026',
     address: 'Abidjan, Yopougon Sideci Lem',
     city: 'Abidjan',
-    country: "Cote d'Ivoire",
+    country: "Côte d'Ivoire",
     phonePrimary: '+225 27 22 35 04 05',
     phoneSecondary: '+225 01 00 29 05 05',
     email: 'associaitionsportivemaxwellfae@gmail.com',
@@ -188,17 +188,17 @@ export const defaultPublicHomepageData: PublicHomepageData = {
       eyebrow: 'Centre de Formation',
       titleMain: 'MAXWELL',
       titleAccent: 'FAE',
-      subtitle: 'Discipline. Honneur. Rigueur. Une academie moderne pour les talents de demain.',
+      subtitle: 'Discipline. Honneur. Rigueur. Une académie moderne pour les talents de demain.',
       seasonLabel: 'SAISON 2025-2026',
       backgroundImageUrl: '/images/hero-bg.jpg',
-      ctaPrimary: defaultCta("Rejoindre l'academie", '#inscription'),
-      ctaSecondary: defaultCta('Decouvrir le centre', '#le-centre'),
+      ctaPrimary: defaultCta("Rejoindre l'académie", '#inscription'),
+      ctaSecondary: defaultCta('Découvrir le centre', '#le-centre'),
     },
     center: {
       eyebrow: 'Le Centre',
       title: 'UN TERRAIN DE JEU PROFESSIONNEL',
       body:
-        'Nos installations comprennent un terrain en herbe synthetique homologue, des vestiaires modernes et un espace analyse video pour le suivi de chaque joueur.',
+        "Nos installations comprennent un terrain en herbe synthétique homologué, des vestiaires modernes et un espace d'analyse vidéo pour le suivi de chaque joueur.",
       imageUrl: '/images/centre-installations.jpg',
       cta: defaultCta('Voir les installations', '#galerie'),
       stats: [
@@ -209,23 +209,23 @@ export const defaultPublicHomepageData: PublicHomepageData = {
     },
     development: {
       eyebrow: 'Projet',
-      title: 'DEVELOPPEMENT',
+      title: 'DÉVELOPPEMENT',
       body:
-        'Notre methode allie technique, tactique et mental. Chaque joueur suit un plan individuel avec des objectifs clairs sur la saison.',
+        'Notre méthode allie technique, tactique et mental. Chaque joueur suit un plan individuel avec des objectifs clairs sur la saison.',
       imageUrl: '/images/projet-developpement.jpg',
-      cta: defaultCta('Decouvrir la methode', '#competences'),
+      cta: defaultCta('Découvrir la méthode', '#competences'),
       pillars: [
-        { label: 'Technique', description: 'Maitrise du ballon', iconKey: 'zap', sortOrder: 0 },
+        { label: 'Technique', description: 'Maîtrise du ballon', iconKey: 'zap', sortOrder: 0 },
         { label: 'Tactique', description: 'Intelligence de jeu', iconKey: 'target', sortOrder: 1 },
-        { label: 'Mental', description: 'Force interieure', iconKey: 'brain', sortOrder: 2 },
+        { label: 'Mental', description: 'Force intérieure', iconKey: 'brain', sortOrder: 2 },
       ],
     },
     playerProfile: {
-      eyebrow: 'Competences',
+      eyebrow: 'Compétences',
       title: 'PROFIL DU MOIS',
       body: 'Milieu offensif complet, vision du jeu, passe en profondeur et finition calme.',
       imageUrl: '/images/profil-joueur.jpg',
-      cta: defaultCta('Demander la fiche complete', '#contact'),
+      cta: defaultCta('Demander la fiche complète', '#contact'),
       stats: [
         { label: 'Vitesse', value: '86', iconKey: 'zap', sortOrder: 0 },
         { label: 'Passe', value: '91', iconKey: 'target', sortOrder: 1 },
@@ -234,32 +234,32 @@ export const defaultPublicHomepageData: PublicHomepageData = {
     },
     trainingDay: {
       eyebrow: 'Immersion',
-      title: "JOURNEE D'ENTRAINEMENT",
-      body: "Viens passer une journee avec nous : echauffement, seance technique, match en fin de matinee.",
+      title: "JOURNÉE D'ENTRAÎNEMENT",
+      body: "Viens passer une journée avec nous : échauffement, séance technique, match en fin de matinée.",
       imageUrl: '/images/journee-entrainement.jpg',
-      cta: defaultCta('Reserver ma place', '#contact'),
+      cta: defaultCta('Réserver ma place', '#contact'),
       schedule: [
         { timeLabel: '08:30', activity: 'Accueil', sortOrder: 0 },
-        { timeLabel: '09:00', activity: 'Echauffement', sortOrder: 1 },
+        { timeLabel: '09:00', activity: 'Échauffement', sortOrder: 1 },
         { timeLabel: '10:00', activity: 'Travail technique', sortOrder: 2 },
         { timeLabel: '11:30', activity: 'Match', sortOrder: 3 },
       ],
     },
   },
   categories: [
-    { code: 'U7', title: 'U7', ageLabel: '6-7 ans', description: 'Debuter avec le plaisir du jeu', themeKey: 'emerald', sortOrder: 0 },
+    { code: 'U7', title: 'U7', ageLabel: '6-7 ans', description: 'Débuter avec le plaisir du jeu', themeKey: 'emerald', sortOrder: 0 },
     { code: 'U9', title: 'U9', ageLabel: '8-9 ans', description: 'Coordination et technique de base', themeKey: 'blue', sortOrder: 1 },
     { code: 'U12', title: 'U12', ageLabel: '10-12 ans', description: 'Tactique et collectif', themeKey: 'violet', sortOrder: 2 },
     { code: 'U15', title: 'U15', ageLabel: '13-15 ans', description: 'Performance et exigence', themeKey: 'amber', sortOrder: 3 },
-    { code: 'U17', title: 'U17', ageLabel: '16-17 ans', description: 'Preparation haut niveau', themeKey: 'rose', sortOrder: 4 },
+    { code: 'U17', title: 'U17', ageLabel: '16-17 ans', description: 'Préparation haut niveau', themeKey: 'rose', sortOrder: 4 },
   ],
   latestNews: [
     {
-      title: 'COUPE REGIONALE : LES U15 EN FINALE',
+      title: 'COUPE RÉGIONALE : LES U15 EN FINALE',
       slug: 'coupe-regionale-les-u15-en-finale',
-      excerpt: "Les U15 disputeront la finale regionale ce samedi au stade municipal.",
+      excerpt: "Les U15 disputeront la finale régionale ce samedi au stade municipal.",
       content:
-        "Apres une demi-finale maitrisee, nos U15 affronteront l'Etoile Sportive ce samedi au stade municipal. Entree gratuite pour les supporters.",
+        "Après une demi-finale maîtrisée, nos U15 affronteront l'Etoile Sportive ce samedi au stade municipal. Entrée gratuite pour les supporters.",
       coverUrl: '/images/actualites-match.jpg',
       categoryLabel: 'Competition',
       tags: ['u15', 'competition', 'finale'],
@@ -268,19 +268,19 @@ export const defaultPublicHomepageData: PublicHomepageData = {
   ],
   staff: [
     { name: 'Karim Bensaid', role: 'Directeur technique', bio: '', imageUrl: '/images/coach-1.jpg', sortOrder: 0 },
-    { name: 'Lea Morel', role: 'Responsable U9-U12', bio: '', imageUrl: '/images/coach-2.jpg', sortOrder: 1 },
-    { name: 'Samir Taleb', role: 'Preparateur physique', bio: '', imageUrl: '/images/coach-3.jpg', sortOrder: 2 },
-    { name: 'Ines Durand', role: 'Analyste video', bio: '', imageUrl: '/images/coach-4.jpg', sortOrder: 3 },
+    { name: 'Léa Morel', role: 'Responsable U9-U12', bio: '', imageUrl: '/images/coach-2.jpg', sortOrder: 1 },
+    { name: 'Samir Taleb', role: 'Préparateur physique', bio: '', imageUrl: '/images/coach-3.jpg', sortOrder: 2 },
+    { name: 'Inès Durand', role: 'Analyste video', bio: '', imageUrl: '/images/coach-4.jpg', sortOrder: 3 },
     { name: 'Tom Girard', role: 'Responsable U15-U17', bio: '', imageUrl: '/images/coach-5.jpg', sortOrder: 4 },
-    { name: 'Nina Okafor', role: 'Responsable medicale', bio: '', imageUrl: '/images/coach-6.jpg', sortOrder: 5 },
+    { name: 'Nina Okafor', role: 'Responsable médicale', bio: '', imageUrl: '/images/coach-6.jpg', sortOrder: 5 },
   ],
   gallery: [
-    { title: 'Arret decisif', imageUrl: '/images/galerie-1.jpg', galleryCategory: 'matchs', displaySize: 'large', sortOrder: 0, isFeatured: true },
-    { title: 'Celebration', imageUrl: '/images/galerie-2.jpg', galleryCategory: 'evenements', displaySize: 'medium', sortOrder: 1, isFeatured: false },
-    { title: 'Seance technique', imageUrl: '/images/galerie-3.jpg', galleryCategory: 'entrainement', displaySize: 'small', sortOrder: 2, isFeatured: false },
+    { title: 'Arrêt décisif', imageUrl: '/images/galerie-1.jpg', galleryCategory: 'matchs', displaySize: 'large', sortOrder: 0, isFeatured: true },
+    { title: 'Célébration', imageUrl: '/images/galerie-2.jpg', galleryCategory: 'evenements', displaySize: 'medium', sortOrder: 1, isFeatured: false },
+    { title: 'Séance technique', imageUrl: '/images/galerie-3.jpg', galleryCategory: 'entrainement', displaySize: 'small', sortOrder: 2, isFeatured: false },
     { title: 'Tir au but', imageUrl: '/images/galerie-4.jpg', galleryCategory: 'matchs', displaySize: 'medium', sortOrder: 3, isFeatured: false },
-    { title: 'Remise des trophees', imageUrl: '/images/galerie-5.jpg', galleryCategory: 'evenements', displaySize: 'large', sortOrder: 4, isFeatured: true },
-    { title: 'Echauffement', imageUrl: '/images/galerie-6.jpg', galleryCategory: 'entrainement', displaySize: 'small', sortOrder: 5, isFeatured: false },
+    { title: 'Remise des trophées', imageUrl: '/images/galerie-5.jpg', galleryCategory: 'evenements', displaySize: 'large', sortOrder: 4, isFeatured: true },
+    { title: 'Échauffement', imageUrl: '/images/galerie-6.jpg', galleryCategory: 'entrainement', displaySize: 'small', sortOrder: 5, isFeatured: false },
   ],
   partners: [
     { name: 'Nike', initials: 'NK', logoUrl: '', websiteUrl: '', sortOrder: 0 },
@@ -290,7 +290,7 @@ export const defaultPublicHomepageData: PublicHomepageData = {
     { name: 'Orange', initials: 'OR', logoUrl: '', websiteUrl: '', sortOrder: 4 },
     { name: 'Canal+', initials: 'C+', logoUrl: '', websiteUrl: '', sortOrder: 5 },
     { name: 'Total', initials: 'TT', logoUrl: '', websiteUrl: '', sortOrder: 6 },
-    { name: 'Societe Generale', initials: 'SG', logoUrl: '', websiteUrl: '', sortOrder: 7 },
+    { name: 'Société Générale', initials: 'SG', logoUrl: '', websiteUrl: '', sortOrder: 7 },
   ],
 };
 
@@ -391,3 +391,5 @@ export function normalizePublicHomepageData(raw?: Partial<PublicHomepageData> | 
     })),
   };
 }
+
+

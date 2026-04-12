@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+﻿import type { Dispatch, SetStateAction } from 'react';
 import { Loader2, Save } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -31,12 +31,12 @@ export function HomepageSection({
   return (
     <div className="space-y-6">
       <Surface
-        title="Hero"
+        title="Bannière principale"
         subtitle="Contenu principal au-dessus de la ligne de flottaison"
         action={
           <Button
             type="button"
-            className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+            className="rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
             onClick={onSaveHomepage}
             disabled={isSavingHomepage}
           >
@@ -48,14 +48,14 @@ export function HomepageSection({
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Enregistrer la homepage
+                Enregistrer la page d'accueil
               </>
             )}
           </Button>
         }
       >
         <div className="grid gap-5 md:grid-cols-2">
-          <LabeledField label="Eyebrow">
+          <LabeledField label="Surtitre">
             <Input
               value={homepageForm.hero.eyebrow}
               onChange={(event) =>
@@ -153,9 +153,9 @@ export function HomepageSection({
         </div>
       </Surface>
 
-      <ContentBlockEditor
-        title="Section Le Centre"
-        description="Texte, image et stats de la section presentation"
+        <ContentBlockEditor
+          title="Section Le Centre"
+          description="Texte, image et stats de la section présentation"
         value={homepageForm.center}
         onChange={(nextValue) =>
           setHomepageForm((current) => ({
@@ -178,7 +178,7 @@ export function HomepageSection({
       />
 
       <ContentBlockEditor
-        title="Projet de developpement"
+        title="Projet de développement"
         description="Narration principale et piliers"
         value={homepageForm.development}
         onChange={(nextValue) =>
@@ -202,8 +202,8 @@ export function HomepageSection({
       />
 
       <ContentBlockEditor
-        title="Profil du mois / competences"
-        description="Texte et stats du bloc competence"
+        title="Profil du mois / compétences"
+        description="Texte et stats du bloc compétence"
         value={homepageForm.playerProfile}
         onChange={(nextValue) =>
           setHomepageForm((current) => ({
@@ -213,7 +213,7 @@ export function HomepageSection({
         }
         listEditor={
           <StatListEditor
-            title="Stats competence"
+            title="Stats compétence"
             items={homepageForm.playerProfile.stats}
             onChange={(items) =>
               setHomepageForm((current) => ({
@@ -226,7 +226,7 @@ export function HomepageSection({
       />
 
       <ContentBlockEditor
-        title="Journee d'entrainement"
+        title="Journée d'entraînement"
         description="Texte principal et planning"
         value={homepageForm.trainingDay}
         onChange={(nextValue) =>
@@ -251,4 +251,6 @@ export function HomepageSection({
     </div>
   );
 }
+
+
 

@@ -79,10 +79,10 @@ const Categories = ({ categories = defaultPublicHomepageData.categories }: Categ
     >
       <div ref={headlineRef} className="mb-8 px-5 sm:px-8 lg:px-[8vw]">
         <span className="mb-4 block font-mono text-xs font-bold uppercase tracking-widest text-accent">
-          Categories
+          Catégories
         </span>
         <h2 className="text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
-          TROUVE TA CATEGORIE
+          TROUVE TA CATÉGORIE
         </h2>
       </div>
 

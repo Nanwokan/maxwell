@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+﻿import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Check, FileText } from 'lucide-react';
@@ -48,10 +48,10 @@ function getAgeRangeLabel(categories: PublicCategory[]): string {
     .filter((value) => Number.isFinite(value));
 
   if (ages.length === 0) {
-    return '6 a 17 ans';
+    return '6 à 17 ans';
   }
 
-  return `${Math.min(...ages)} a ${Math.max(...ages)} ans`;
+  return `${Math.min(...ages)} à ${Math.max(...ages)} ans`;
 }
 
 function createInitialForm(categories: PublicCategory[]): RegistrationForm {
@@ -69,7 +69,7 @@ function createInitialForm(categories: PublicCategory[]): RegistrationForm {
 
 const steps = [
   'Remplis le formulaire en ligne',
-  "Recois ta convocation d'essai",
+  "Reçois ta convocation d'essai",
   "Valide ton inscription",
 ];
 
@@ -183,12 +183,12 @@ const Inscription = ({
         message: formData.message || undefined,
       });
 
-      toast.success("Pre-inscription envoyee. Nous revenons vers vous rapidement.");
+      toast.success("Pré-inscription envoyée. Nous revenons vers vous rapidement.");
       setFormData(createInitialForm(categories));
       setIsDialogOpen(false);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Impossible d'envoyer la pre-inscription.";
+        error instanceof Error ? error.message : "Impossible d'envoyer la pré-inscription.";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -227,7 +227,7 @@ const Inscription = ({
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="btn-primary flex h-auto w-full items-center justify-center gap-2 px-6 py-3 text-base text-[#0B0F17] sm:w-auto">
-                  Pre-inscription
+                  Pré-inscription
                   <ArrowRight size={18} />
                 </Button>
               </DialogTrigger>
@@ -236,11 +236,11 @@ const Inscription = ({
                 <div className="border-b border-white/10 px-6 py-5 lg:px-8">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-extrabold tracking-tight text-white">
-                      Pre-inscription en ligne
+                      Pré-inscription en ligne
                     </DialogTitle>
                     <DialogDescription className="text-sm text-[#8FA0B7]">
                       Renseigne les informations du parent et du joueur. La demande arrivera
-                      directement dans l’inbox admin.
+                      directement dans l'inbox admin.
                     </DialogDescription>
                   </DialogHeader>
                 </div>
@@ -268,7 +268,7 @@ const Inscription = ({
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-medium text-[#D6DEEA]">
-                        Telephone
+                        Téléphone
                       </span>
                       <input
                         type="tel"
@@ -316,7 +316,7 @@ const Inscription = ({
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-medium text-[#D6DEEA]">
-                        Age
+                        Âge
                       </span>
                       <input
                         type="number"
@@ -334,7 +334,7 @@ const Inscription = ({
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-medium text-[#D6DEEA]">
-                        Categorie
+                        Catégorie
                       </span>
                       <select
                         value={formData.categoryCode}
@@ -381,7 +381,7 @@ const Inscription = ({
                           setFormData((current) => ({ ...current, message: event.target.value }))
                         }
                         className="input-dark h-28 w-full resize-none"
-                        placeholder="Precisions utiles, disponibilites, questions..."
+                        placeholder="Précisions utiles, disponibilités, questions..."
                       />
                     </label>
                   </div>
@@ -397,10 +397,10 @@ const Inscription = ({
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-[#D7FF3B] text-[#0B0F17] hover:bg-[#e8ff7b]"
+                      className="bg-[#FF8A1F] text-[#0B0F17] hover:bg-[#FF9F45]"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Envoi en cours...' : 'Envoyer la pre-inscription'}
+                      {isSubmitting ? 'Envoi en cours...' : 'Envoyer la pré-inscription'}
                     </Button>
                   </div>
                 </form>
@@ -412,7 +412,7 @@ const Inscription = ({
               className="flex w-full items-center justify-center gap-2 text-[#A9B3C2] transition-colors hover:text-accent sm:w-auto"
             >
               <FileText size={18} />
-              Demander la fiche medicale
+              Demander la fiche médicale
             </a>
           </div>
         </div>
@@ -439,3 +439,7 @@ const Inscription = ({
 };
 
 export default Inscription;
+
+
+
+

@@ -76,7 +76,7 @@ html {
 
 /* Text gradient */
 .text-gradient {
-  background: linear-gradient(135deg, #D7FF3B 0%, #a8cc2f 100%);
+  background: linear-gradient(135deg, #FF8A1F 0%, #C86200 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -129,7 +129,7 @@ html {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #D7FF3B;
+  outline: 2px solid #FF8A1F;
   outline-offset: 2px;
 }
 
@@ -149,3 +149,4 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+

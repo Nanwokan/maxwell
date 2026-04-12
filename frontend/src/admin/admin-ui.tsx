@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Loader2, Plus } from 'lucide-react';
 
@@ -11,7 +11,7 @@ import type { CtaForm, PillarItem, ScheduleItem, StatItem } from '@/admin/admin.
 export function LoadingState() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center rounded-[2rem] border border-white/10 bg-[#101928]">
-      <div className="flex items-center gap-3 text-[#D7FF3B]">
+      <div className="flex items-center gap-3 text-[#FF8A1F]">
         <Loader2 className="h-5 w-5 animate-spin" />
         Chargement du back-office...
       </div>
@@ -30,7 +30,7 @@ export function FeatureTile({
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#D7FF3B]/10 text-[#D7FF3B]">
+      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF8A1F]/10 text-[#FF8A1F]">
         <Icon className="h-5 w-5" />
       </div>
       <p className="font-semibold text-white">{title}</p>
@@ -51,13 +51,15 @@ export function Surface({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-[#101928] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+    <section className="rounded-[1.5rem] border border-white/10 bg-[#101928] p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)] sm:rounded-[2rem] sm:p-5">
       <div className="mb-6 flex flex-col gap-3 border-b border-white/10 pb-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h3 className="text-xl font-bold text-white">{title}</h3>
           <p className="mt-1 text-sm text-[#8C97AB]">{subtitle}</p>
         </div>
-        {action}
+        {action ? (
+          <div className="w-full lg:w-auto [&_button]:w-full sm:[&_button]:w-auto">{action}</div>
+        ) : null}
       </div>
       {children}
     </section>
@@ -85,7 +87,7 @@ export function MetricCard({
     >
       <div className="mb-4 flex items-center justify-between">
         <p className="text-sm font-medium text-[#8C97AB]">{label}</p>
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#D7FF3B]/10 text-[#D7FF3B]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FF8A1F]/10 text-[#FF8A1F]">
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -110,7 +112,7 @@ export function ListRow({
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-[#121D2A] p-4">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="font-semibold text-white">{title}</p>
           <p className="mt-1 text-sm text-[#8C97AB]">{subtitle}</p>
@@ -119,7 +121,7 @@ export function ListRow({
           <Button
             type="button"
             variant="outline"
-            className="rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5"
+            className="w-full shrink-0 rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
             onClick={onAction}
           >
             {actionLabel}
@@ -243,7 +245,7 @@ export function ContentBlockEditor({
   return (
     <Surface title={title} subtitle={description}>
       <div className="grid gap-5 md:grid-cols-2">
-        <LabeledField label="Eyebrow">
+        <LabeledField label="Surtitre">
           <Input
             value={value.eyebrow}
             onChange={(event) => onChange({ ...value, eyebrow: event.target.value })}
@@ -463,7 +465,7 @@ export function ScheduleListEditor({
         {items.map((item, index) => (
           <div key={`${item.timeLabel}-${index}`} className="rounded-2xl border border-white/10 p-4">
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm font-semibold text-[#CFD5DE]">Creneau #{index + 1}</p>
+              <p className="text-sm font-semibold text-[#CFD5DE]">Créneau #{index + 1}</p>
               <button
                 type="button"
                 onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))}
@@ -480,7 +482,7 @@ export function ScheduleListEditor({
                   className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white"
                 />
               </LabeledField>
-              <LabeledField label="Activite">
+              <LabeledField label="Activité">
                 <Input
                   value={item.activity}
                   onChange={(event) => updateItem(index, { activity: event.target.value })}
@@ -494,3 +496,5 @@ export function ScheduleListEditor({
     </div>
   );
 }
+
+

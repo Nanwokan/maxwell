@@ -12,19 +12,19 @@
     --card-foreground: 220 20% 97%;
     --popover: 216 28% 11%;
     --popover-foreground: 220 20% 97%;
-    --primary: 76 100% 61%;
+    --primary: 28 100% 56%;
     --primary-foreground: 220 30% 7%;
     --secondary: 216 28% 11%;
     --secondary-foreground: 220 20% 97%;
     --muted: 216 20% 20%;
     --muted-foreground: 215 16% 68%;
-    --accent: 76 100% 61%;
+    --accent: 28 100% 56%;
     --accent-foreground: 220 30% 7%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 15% 18%;
     --input: 220 15% 18%;
-    --ring: 76 100% 61%;
+    --ring: 28 100% 56%;
     --radius: 0.75rem;
   }
 }
@@ -54,7 +54,7 @@
   }
   
   .text-gradient {
-    background: linear-gradient(135deg, #D7FF3B 0%, #a8cc2f 100%);
+    background: linear-gradient(135deg, #FF8A1F 0%, #C86200 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -69,15 +69,15 @@
   }
   
   .text-accent {
-    color: #D7FF3B;
+    color: #FF8A1F;
   }
   
   .bg-accent {
-    background-color: #D7FF3B;
+    background-color: #FF8A1F;
   }
   
   .border-accent {
-    border-color: #D7FF3B;
+    border-color: #FF8A1F;
   }
   
   .text-primary-light {
@@ -187,7 +187,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D7FF3B;
+  background: #FF8A1F;
 }
 
 /* Selection styling */
@@ -195,3 +195,4 @@
   background: rgba(215, 255, 59, 0.3);
   color: #F4F6FA;
 }
+

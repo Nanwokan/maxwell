@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+﻿import type { Dispatch, SetStateAction } from 'react';
 import { CheckCheck, ClipboardList, Mail, MessageCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -53,23 +53,23 @@ export function InboxSection({
           compact
         />
         <MetricCard
-          label="Demandes a traiter"
+          label="Demandes à traiter"
           value={registrationSummary.new}
           detail={`${registrationSummary.all} inscriptions au total`}
           icon={ClipboardList}
           compact
         />
         <MetricCard
-          label="Messages replies"
+          label="Messages répondus"
           value={contactSummary.replied}
-          detail={`${contactSummary.archived} archives`}
+          detail={`${contactSummary.archived} archivés`}
           icon={MessageCircle}
           compact
         />
         <MetricCard
-          label="Inscriptions validees"
+          label="Inscriptions validées"
           value={registrationSummary.validated}
-          detail={`${registrationSummary.archived} archivees`}
+          detail={`${registrationSummary.archived} archivées`}
           icon={CheckCheck}
           compact
         />
@@ -78,7 +78,7 @@ export function InboxSection({
       <div className="grid gap-6 xl:grid-cols-2">
         <Surface
           title="Notifications messages"
-          subtitle="Inbox garde les alertes recentes et renvoie vers la page Messages."
+          subtitle="La boîte de réception garde les alertes récentes et renvoie vers la page Messages."
           action={
             <Button
               type="button"
@@ -113,7 +113,7 @@ export function InboxSection({
 
         <Surface
           title="Notifications inscriptions"
-          subtitle="Inbox garde les nouvelles demandes et renvoie vers la page Inscriptions."
+          subtitle="La boîte de réception garde les nouvelles demandes et renvoie vers la page Inscriptions."
           action={
             <Button
               type="button"
@@ -132,7 +132,7 @@ export function InboxSection({
                   key={extractId(item)}
                   title={`${item.childName} · ${item.categoryCode}`}
                   subtitle={`${item.parentName} · ${item.parentPhone} · ${formatDate(item.createdAt)}`}
-                  body={item.message || 'Pas de message ajoute sur cette demande.'}
+                  body={item.message || 'Pas de message ajouté sur cette demande.'}
                   actionLabel="Ouvrir"
                   onAction={() => {
                     setSelectedRegistrationId(extractId(item));
@@ -142,8 +142,8 @@ export function InboxSection({
               ))
             ) : (
               <EmptyState
-                title="Aucune nouvelle pre-inscription"
-                description="Les demandes deja traitees restent disponibles dans la page Inscriptions."
+                title="Aucune nouvelle pré-inscription"
+                description="Les demandes déjà traitées restent disponibles dans la page Inscriptions."
               />
             )}
           </div>
@@ -152,4 +152,5 @@ export function InboxSection({
     </div>
   );
 }
+
 

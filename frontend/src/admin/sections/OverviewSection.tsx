@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+﻿import type { LucideIcon } from 'lucide-react';
 import { Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -53,12 +53,12 @@ export function OverviewSection({
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <Surface
-          title="Dernieres actualites"
-          subtitle="Pilotage editorial"
+          title="Dernières actualités"
+          subtitle="Pilotage éditorial"
           action={
             <Button
               type="button"
-              className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+              className="rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
               onClick={onCreateNews}
             >
               <Plus className="h-4 w-4" />
@@ -78,21 +78,21 @@ export function OverviewSection({
             ))}
             {newsItems.length === 0 && (
               <EmptyState
-                title="Aucune actualite"
-                description="Commence par creer votre premier article dans le back-office."
+                title="Aucune actualité"
+                description="Commence par créer votre premier article dans le back-office."
               />
             )}
           </div>
         </Surface>
 
-        <Surface title="Collections" subtitle="Ce qui est deja pilote par l'API">
+        <Surface title="Collections" subtitle="Ce qui est déjà piloté par l'API">
           <div className="grid gap-3 sm:grid-cols-2">
             {contentCollections.map((collection) => (
               <MetricCard
                 key={collection.label}
                 label={collection.label}
                 value={collection.value}
-                detail="Collections seedees"
+                detail="Collections initialisées"
                 icon={collection.icon}
                 compact
               />
@@ -103,4 +103,6 @@ export function OverviewSection({
     </>
   );
 }
+
+
 

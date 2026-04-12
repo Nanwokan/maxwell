@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+﻿import type { Dispatch, SetStateAction } from 'react';
 import { Loader2, Save } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -22,12 +22,12 @@ export function SettingsSection({
 }: SettingsSectionProps) {
   return (
     <Surface
-      title="Parametres du site"
-      subtitle="Coordonnees, saison, reseaux et informations globales"
+      title="Paramètres du site"
+      subtitle="Coordonnées, saison, réseaux et informations globales"
       action={
         <Button
           type="button"
-          className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+          className="rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
           onClick={onSaveSettings}
           disabled={isSavingSettings}
         >
@@ -115,7 +115,7 @@ export function SettingsSection({
             className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white"
           />
         </LabeledField>
-        <LabeledField label="Telephone principal">
+        <LabeledField label="Téléphone principal">
           <Input
             value={settingsForm.phonePrimary}
             onChange={(event) =>
@@ -127,7 +127,7 @@ export function SettingsSection({
             className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white"
           />
         </LabeledField>
-        <LabeledField label="Telephone secondaire">
+        <LabeledField label="Téléphone secondaire">
           <Input
             value={settingsForm.phoneSecondary}
             onChange={(event) =>
@@ -201,4 +201,6 @@ export function SettingsSection({
     </Surface>
   );
 }
+
+
 

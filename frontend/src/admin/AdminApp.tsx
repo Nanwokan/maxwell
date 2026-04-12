@@ -1,4 +1,4 @@
-import {
+﻿import {
   startTransition,
   useDeferredValue,
   useEffect,
@@ -10,11 +10,14 @@ import {
   ArrowLeft,
   Bell,
   ClipboardList,
+  Eye,
+  EyeOff,
   Globe,
   Images,
   LayoutDashboard,
   Loader2,
   LogOut,
+  Menu,
   Mail,
   Newspaper,
   RefreshCcw,
@@ -23,6 +26,7 @@ import {
   Sparkles,
   UserRound,
   Users,
+  X,
 } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 
@@ -58,12 +62,15 @@ import type {
   ContactMessage,
   GalleryItem,
   HomepageForm,
+  ForgotPasswordResponse,
   LoginResponse,
   NewsForm,
   NewsItem,
   Partner,
   Registration,
   RegistrationFilter,
+  ResetPasswordResponse,
+  VerifyResetCodeResponse,
   SectionKey,
   SiteSettings,
   StaffMember,
@@ -93,10 +100,10 @@ import {
 
 const sidebarSections: Array<{ key: SectionKey; label: string; icon: typeof LayoutDashboard }> = [
   { key: 'overview', label: 'Tableau de bord', icon: LayoutDashboard },
-  { key: 'settings', label: 'Parametres du site', icon: Settings },
-  { key: 'homepage', label: 'Homepage', icon: Globe },
-  { key: 'news', label: 'Actualites', icon: Newspaper },
-  { key: 'inbox', label: 'Inbox', icon: Bell },
+  { key: 'settings', label: 'Paramètres du site', icon: Settings },
+  { key: 'homepage', label: "Page d'accueil", icon: Globe },
+  { key: 'news', label: 'Actualités', icon: Newspaper },
+  { key: 'inbox', label: 'Boîte de réception', icon: Bell },
   { key: 'messages', label: 'Messages', icon: Mail },
   { key: 'registrations', label: 'Inscriptions', icon: ClipboardList },
 ];
@@ -121,6 +128,23 @@ export default function AdminApp() {
   const [isAuthenticating, setIsAuthenticating] = useState(Boolean(initialSession));
   const [isLoadingData, setIsLoadingData] = useState(Boolean(initialSession));
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState<'request' | 'verify' | 'reset'>(
+    'request'
+  );
+  const [forgotPasswordForm, setForgotPasswordForm] = useState({
+    email: '',
+    code: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [resetSessionToken, setResetSessionToken] = useState<string | null>(null);
+  const [isResetPasswordVisible, setIsResetPasswordVisible] = useState(false);
+  const [isSubmittingForgotPassword, setIsSubmittingForgotPassword] = useState(false);
+  const [isSubmittingCodeVerification, setIsSubmittingCodeVerification] = useState(false);
+  const [isSubmittingResetPassword, setIsSubmittingResetPassword] = useState(false);
+  const [developmentResetCode, setDevelopmentResetCode] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [isSavingHomepage, setIsSavingHomepage] = useState(false);
@@ -142,6 +166,7 @@ export default function AdminApp() {
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
   const [registrationNotesDraft, setRegistrationNotesDraft] = useState('');
   const [isSavingRegistrationNotes, setIsSavingRegistrationNotes] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const hasSession = session !== null;
 
   const handleUnauthorized = useCallback(() => {
@@ -149,7 +174,7 @@ export default function AdminApp() {
     setSession(null);
     setIsAuthenticating(false);
     setIsLoadingData(false);
-    toast.error('Votre session admin a expire. Connectez-vous a nouveau.');
+    toast.error('Votre session admin a expiré. Connectez-vous à nouveau.');
   }, []);
 
   const handleApiError = useCallback(
@@ -344,9 +369,9 @@ export default function AdminApp() {
   const metrics = useMemo(
     () => [
       {
-        label: 'Actualites',
+        label: 'Actualités',
         value: newsItems.length,
-        detail: `${newsItems.filter((item) => item.status === 'published').length} publiees`,
+        detail: `${newsItems.filter((item) => item.status === 'published').length} publiées`,
         icon: Newspaper,
       },
       {
@@ -358,11 +383,11 @@ export default function AdminApp() {
       {
         label: 'Inscriptions',
         value: registrations.length,
-        detail: `${registrations.filter((item) => item.status === 'new').length} a traiter`,
+        detail: `${registrations.filter((item) => item.status === 'new').length} à traiter`,
         icon: ClipboardList,
       },
       {
-        label: 'Medias galerie',
+        label: 'Médias galerie',
         value: galleryItems.length,
         detail: `${galleryItems.filter((item) => item.isActive).length} actifs`,
         icon: Images,
@@ -390,7 +415,8 @@ export default function AdminApp() {
       setSession(nextSession);
       setActiveSection('overview');
       setLoginForm({ email: '', password: '' });
-      toast.success('Connexion admin reussie.');
+      setIsLoginPasswordVisible(false);
+      toast.success('Connexion admin réussie.');
     } catch (error) {
       handleApiError(error, 'Connexion admin impossible.', {
         treat401AsSessionExpired: false,
@@ -400,13 +426,105 @@ export default function AdminApp() {
     }
   }
 
+  async function handleForgotPasswordSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmittingForgotPassword(true);
+
+    try {
+      const response = await postJson<ForgotPasswordResponse>('/api/admin/auth/forgot-password', {
+        email: forgotPasswordForm.email.trim(),
+      });
+
+      setForgotPasswordStep('verify');
+      setResetSessionToken(null);
+      setDevelopmentResetCode(response.resetCode ?? null);
+      if (response.resetCode) {
+        setForgotPasswordForm((current) => ({ ...current, code: response.resetCode ?? '' }));
+      }
+
+      toast.success(response.message);
+    } catch (error) {
+      handleApiError(error, "Impossible d'initier la réinitialisation du mot de passe.", {
+        treat401AsSessionExpired: false,
+      });
+    } finally {
+      setIsSubmittingForgotPassword(false);
+    }
+  }
+
+  async function handleVerifyResetCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmittingCodeVerification(true);
+
+    try {
+      const response = await postJson<VerifyResetCodeResponse>('/api/admin/auth/verify-reset-code', {
+        email: forgotPasswordForm.email.trim(),
+        code: forgotPasswordForm.code.trim(),
+      });
+
+      setResetSessionToken(response.resetSessionToken);
+      setForgotPasswordStep('reset');
+      setDevelopmentResetCode(null);
+      toast.success(response.message);
+    } catch (error) {
+      handleApiError(error, 'Impossible de vérifier le code.', {
+        treat401AsSessionExpired: false,
+      });
+    } finally {
+      setIsSubmittingCodeVerification(false);
+    }
+  }
+
+  async function handleResetPasswordSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!resetSessionToken) {
+      toast.error('Vérifiez le code avant de définir un nouveau mot de passe.');
+      return;
+    }
+
+    if (forgotPasswordForm.newPassword !== forgotPasswordForm.confirmPassword) {
+      toast.error('La confirmation du mot de passe ne correspond pas.');
+      return;
+    }
+
+    setIsSubmittingResetPassword(true);
+
+    try {
+      const response = await postJson<ResetPasswordResponse>('/api/admin/auth/reset-password', {
+        resetSessionToken,
+        password: forgotPasswordForm.newPassword,
+      });
+
+      setLoginForm({ email: forgotPasswordForm.email.trim(), password: '' });
+      setForgotPasswordForm((current) => ({
+        ...current,
+        code: '',
+        newPassword: '',
+        confirmPassword: '',
+      }));
+      setResetSessionToken(null);
+      setDevelopmentResetCode(null);
+      setForgotPasswordStep('request');
+      setIsResetPasswordVisible(false);
+      setIsForgotPasswordMode(false);
+      toast.success(response.message);
+    } catch (error) {
+      handleApiError(error, 'Impossible de réinitialiser le mot de passe.', {
+        treat401AsSessionExpired: false,
+      });
+    } finally {
+      setIsSubmittingResetPassword(false);
+    }
+  }
+
   async function refreshData() {
     if (!session) {
       return;
     }
 
     await loadAdminData();
-    toast.success('Donnees admin rechargees.');
+    toast.success('Données admin rechargées.');
   }
 
   async function handleLogout() {
@@ -421,11 +539,16 @@ export default function AdminApp() {
     setActiveSection('overview');
     setEditingNewsId(null);
     setNewsForm(createEmptyNewsForm());
-    toast.success('Session admin deconnectee.');
+    toast.success('Session admin déconnectée.');
   }
 
   function handleReturnToSite() {
     navigateToPublicRoute();
+  }
+
+  function handleSectionSelect(nextSection: SectionKey) {
+    startTransition(() => setActiveSection(nextSection));
+    setIsMobileSidebarOpen(false);
   }
 
   async function saveSettings() {
@@ -442,9 +565,9 @@ export default function AdminApp() {
       );
 
       setSettingsForm(normalizeSettings(response.item));
-      toast.success('Parametres du site enregistres.');
+      toast.success('Paramètres du site enregistrés.');
     } catch (error) {
-      handleApiError(error, 'Impossible d enregistrer les parametres du site.');
+      handleApiError(error, "Impossible d'enregistrer les paramètres du site.");
     } finally {
       setIsSavingSettings(false);
     }
@@ -464,9 +587,9 @@ export default function AdminApp() {
       );
 
       setHomepageForm(normalizeHomepage(response.item));
-      toast.success('Contenu homepage mis a jour.');
+      toast.success("Contenu de la page d'accueil mis à jour.");
     } catch (error) {
-      handleApiError(error, 'Impossible d enregistrer la homepage.');
+      handleApiError(error, "Impossible d'enregistrer la page d'accueil.");
     } finally {
       setIsSavingHomepage(false);
     }
@@ -497,12 +620,12 @@ export default function AdminApp() {
 
         setNewsItems((currentItems) => [response.item, ...currentItems]);
         setEditingNewsId(extractId(response.item));
-        toast.success('Actualite creee.');
+        toast.success('Actualité créée.');
         return;
       }
 
       if (!editingNewsId) {
-        toast.error('Choisissez ou creez une actualite a modifier.');
+        toast.error('Choisissez ou créez une actualité à modifier.');
         return;
       }
 
@@ -514,9 +637,9 @@ export default function AdminApp() {
       setNewsItems((currentItems) =>
         currentItems.map((item) => (extractId(item) === editingNewsId ? response.item : item))
       );
-      toast.success('Actualite mise a jour.');
+      toast.success('Actualité mise à jour.');
     } catch (error) {
-      handleApiError(error, 'Impossible d enregistrer l actualite.');
+      handleApiError(error, "Impossible d'enregistrer l'actualité.");
     } finally {
       setIsSavingNews(false);
     }
@@ -527,7 +650,7 @@ export default function AdminApp() {
       return;
     }
 
-    if (!window.confirm('Supprimer cette actualite ?')) {
+    if (!window.confirm('Supprimer cette actualité ?')) {
       return;
     }
 
@@ -540,9 +663,9 @@ export default function AdminApp() {
         setNewsForm(createEmptyNewsForm());
       }
 
-      toast.success('Actualite supprimee.');
+      toast.success('Actualité supprimée.');
     } catch (error) {
-      handleApiError(error, 'Impossible de supprimer l actualite.');
+      handleApiError(error, "Impossible de supprimer l'actualité.");
     }
   }
 
@@ -616,9 +739,9 @@ export default function AdminApp() {
     return (
       <div className="min-h-screen bg-[#071018] text-white">
         <div className="relative isolate overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(215,255,59,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,_rgba(45,78,255,0.2),transparent_40%)]" />
-          <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center gap-10 px-6 py-12 lg:flex-row lg:items-center lg:px-10">
-            <div className="max-w-xl space-y-6">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,138,31,0.2),transparent_36%),radial-gradient(circle_at_bottom_right,_rgba(45,78,255,0.2),transparent_40%)]" />
+          <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center gap-10 px-6 py-12 lg:flex-row md:items-center lg:px-10">
+            <div className="max-w-xl space-y-6 hidden md:block">
               <Button
                 type="button"
                 variant="outline"
@@ -628,17 +751,17 @@ export default function AdminApp() {
                 <ArrowLeft className="h-4 w-4" />
                 Retour au site
               </Button>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#D7FF3B]/25 bg-[#D7FF3B]/10 px-4 py-2 text-sm text-[#D7FF3B] ml-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#FF8A1F]/25 bg-[#FF8A1F]/10 px-4 py-2 text-sm text-[#FF8A1F] ml-4">
                 <ShieldCheck className="h-4 w-4" />
                 Maxwell Back-Office
               </div>
               <div className="space-y-4">
                 <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-                  Administre le site, le contenu et l inbox depuis un seul cockpit.
+                  Administre le site, le contenu et la boîte de réception depuis un seul cockpit.
                 </h1>
                 <p className="max-w-lg text-base leading-7 text-[#A9B3C2]">
-                  Le login admin a ete valide cote backend. Cette premiere interface vous
-                  permet deja de modifier les parametres du site, la homepage, les actualites
+                  La connexion admin a été validée côté backend. Cette première interface vous
+                  permet déjà de modifier les paramètres du site, la page d'accueil, les actualités
                   et le traitement des messages.
                 </p>
               </div>
@@ -646,77 +769,352 @@ export default function AdminApp() {
                 <FeatureTile
                   icon={Globe}
                   title="Contenu"
-                  description="Homepage et reglages publics."
+                  description="Page d'accueil et réglages publics."
                 />
                 <FeatureTile
                   icon={Newspaper}
-                  title="Editorial"
-                  description="Creation et mise a jour des actus."
+                  title="Éditorial"
+                  description="Création et mise à jour des actus."
                 />
                 <FeatureTile
                   icon={Bell}
-                  title="Inbox"
+                  title="Boîte de réception"
                   description="Suivi des messages et inscriptions."
                 />
               </div>
             </div>
-
+            <Button
+                type="button"
+                variant="outline"
+                className="h-11 rounded-2xl md:hidden border-white/10 bg-transparent text-white hover:bg-white/5"
+                onClick={handleReturnToSite}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Retour au site
+            </Button>
             <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#101928]/85 p-8 shadow-[0_30px_100px_rgba(0,0,0,0.35)] backdrop-blur">
               <div className="mb-8 space-y-2">
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#D7FF3B]">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#FF8A1F]">
                   Connexion admin
                 </p>
-                <h2 className="text-2xl font-bold text-white">Acces securise</h2>
+                <h2 className="text-2xl font-bold text-white">Accès sécurisé</h2>
                 <p className="text-sm text-[#8A95A8]">
-                  Endpoint actif sur <span className="font-mono text-[#D7FF3B]">{API_BASE_URL}</span>
+                  Point d'accès API actif sur <span className="font-mono text-[#FF8A1F]">{API_BASE_URL}</span>
                 </p>
               </div>
 
-              <form className="space-y-5" onSubmit={handleLoginSubmit}>
-                <LabeledField label="Email admin">
-                  <Input
-                    type="email"
-                    value={loginForm.email}
-                    onChange={(event) =>
-                      setLoginForm((current) => ({ ...current, email: event.target.value }))
-                    }
-                    placeholder="admin@maxwell.com"
-                    className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white placeholder:text-[#6D7788]"
-                    required
-                  />
-                </LabeledField>
-                <LabeledField label="Mot de passe">
-                  <Input
-                    type="password"
-                    value={loginForm.password}
-                    onChange={(event) =>
-                      setLoginForm((current) => ({ ...current, password: event.target.value }))
-                    }
-                    placeholder="Votre mot de passe admin"
-                    className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white placeholder:text-[#6D7788]"
-                    required
-                  />
-                </LabeledField>
+              {isForgotPasswordMode ? (
+                <div className="space-y-5">
+                  <div className="rounded-2xl border border-white/10 bg-[#111b29] p-4">
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#FF8A1F]">
+                      Réinitialisation en 3 étapes
+                    </p>
+                    <p className="mt-2 text-xs text-[#8A95A8]">
+                      1. Email admin 2. Vérification du code 3. Nouveau mot de passe
+                    </p>
+                  </div>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="h-11 w-full rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
-                  disabled={isSubmittingLogin}
-                >
-                  {isSubmittingLogin ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Connexion...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-4 w-4" />
-                      Se connecter
-                    </>
-                  )}
-                </Button>
-              </form>
+                  {forgotPasswordStep === 'request' ? (
+                    <form className="space-y-4" onSubmit={handleForgotPasswordSubmit}>
+                      <LabeledField label="Étape 1 - Email admin">
+                        <Input
+                          type="email"
+                          value={forgotPasswordForm.email}
+                          onChange={(event) =>
+                            setForgotPasswordForm((current) => ({
+                              ...current,
+                              email: event.target.value,
+                            }))
+                          }
+                          placeholder="admin@maxwell.com"
+                          className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white placeholder:text-[#6D7788]"
+                          required
+                        />
+                      </LabeledField>
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="h-11 w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
+                        disabled={isSubmittingForgotPassword}
+                      >
+                        {isSubmittingForgotPassword ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Envoi...
+                          </>
+                        ) : (
+                          'Envoyer le code'
+                        )}
+                      </Button>
+                    </form>
+                  ) : null}
+
+                  {forgotPasswordStep === 'verify' ? (
+                    <form
+                      className="space-y-4 rounded-2xl border border-white/10 bg-[#111b29] p-4"
+                      onSubmit={handleVerifyResetCodeSubmit}
+                    >
+                      <p className="text-xs uppercase tracking-[0.16em] text-[#FF8A1F]">
+                        Étape 2 - Vérification du code
+                      </p>
+                      <p className="text-xs text-[#8A95A8]">
+                        Saisissez le code à 6 chiffres reçu par email.
+                      </p>
+                      {developmentResetCode ? (
+                        <p className="rounded-lg border border-[#FF8A1F]/30 bg-[#FF8A1F]/10 px-3 py-2 text-xs text-[#FFBE84]">
+                          Mode développement: code rempli automatiquement.
+                        </p>
+                      ) : null}
+                      <LabeledField label="Code à 6 chiffres">
+                        <Input
+                          type="text"
+                          value={forgotPasswordForm.code}
+                          onChange={(event) =>
+                            setForgotPasswordForm((current) => ({
+                              ...current,
+                              code: event.target.value.replace(/\D/g, '').slice(0, 6),
+                            }))
+                          }
+                          placeholder="Ex: 123456"
+                          className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white placeholder:text-[#6D7788]"
+                          inputMode="numeric"
+                          pattern="[0-9]{6}"
+                          maxLength={6}
+                          required
+                        />
+                      </LabeledField>
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="h-11 w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
+                        disabled={isSubmittingCodeVerification}
+                      >
+                        {isSubmittingCodeVerification ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Vérification...
+                          </>
+                        ) : (
+                          'Vérifier le code'
+                        )}
+                      </Button>
+                    </form>
+                  ) : null}
+
+                  {forgotPasswordStep === 'reset' ? (
+                    <form
+                      className="space-y-4 rounded-2xl border border-white/10 bg-[#111b29] p-4"
+                      onSubmit={handleResetPasswordSubmit}
+                    >
+                      <p className="text-xs uppercase tracking-[0.16em] text-[#FF8A1F]">
+                        Étape 3 - Nouveau mot de passe
+                      </p>
+                      <p className="text-xs text-[#8A95A8]">
+                        Le code est vérifié. Vous pouvez définir le nouveau mot de passe.
+                      </p>
+                      <LabeledField label="Nouveau mot de passe">
+                        <div className="relative">
+                          <Input
+                            type={isResetPasswordVisible ? 'text' : 'password'}
+                            value={forgotPasswordForm.newPassword}
+                            onChange={(event) =>
+                              setForgotPasswordForm((current) => ({
+                                ...current,
+                                newPassword: event.target.value,
+                              }))
+                            }
+                            placeholder="Minimum 12 caractères"
+                            className="h-11 rounded-xl border-white/10 bg-[#141d2b] pr-11 text-white placeholder:text-[#6D7788]"
+                            minLength={12}
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#8A95A8] transition hover:text-white"
+                            onClick={() => setIsResetPasswordVisible((current) => !current)}
+                            aria-label={
+                              isResetPasswordVisible
+                                ? 'Masquer le nouveau mot de passe'
+                                : 'Afficher le nouveau mot de passe'
+                            }
+                          >
+                            {isResetPasswordVisible ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </LabeledField>
+                      <LabeledField label="Confirmer le mot de passe">
+                        <div className="relative">
+                          <Input
+                            type={isResetPasswordVisible ? 'text' : 'password'}
+                            value={forgotPasswordForm.confirmPassword}
+                            onChange={(event) =>
+                              setForgotPasswordForm((current) => ({
+                                ...current,
+                                confirmPassword: event.target.value,
+                              }))
+                            }
+                            placeholder="Retapez le nouveau mot de passe"
+                            className="h-11 rounded-xl border-white/10 bg-[#141d2b] pr-11 text-white placeholder:text-[#6D7788]"
+                            minLength={12}
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#8A95A8] transition hover:text-white"
+                            onClick={() => setIsResetPasswordVisible((current) => !current)}
+                            aria-label={
+                              isResetPasswordVisible
+                                ? 'Masquer la confirmation du mot de passe'
+                                : 'Afficher la confirmation du mot de passe'
+                            }
+                          >
+                            {isResetPasswordVisible ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </LabeledField>
+                      {forgotPasswordForm.confirmPassword.length > 0 &&
+                      forgotPasswordForm.newPassword !== forgotPasswordForm.confirmPassword ? (
+                        <p className="text-xs text-[#FFBE84]">
+                          Les deux mots de passe ne correspondent pas.
+                        </p>
+                      ) : null}
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="h-11 w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
+                        disabled={
+                          isSubmittingResetPassword ||
+                          forgotPasswordForm.newPassword !== forgotPasswordForm.confirmPassword
+                        }
+                      >
+                        {isSubmittingResetPassword ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Réinitialisation...
+                          </>
+                        ) : (
+                          'Valider le nouveau mot de passe'
+                        )}
+                      </Button>
+                    </form>
+                  ) : null}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11 w-full rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                    onClick={() => {
+                      setIsForgotPasswordMode(false);
+                      setForgotPasswordStep('request');
+                      setResetSessionToken(null);
+                      setDevelopmentResetCode(null);
+                      setIsResetPasswordVisible(false);
+                      setForgotPasswordForm({
+                        email: '',
+                        code: '',
+                        newPassword: '',
+                        confirmPassword: '',
+                      });
+                    }}
+                  >
+                    Retour à la connexion
+                  </Button>
+                </div>
+              ) : (
+                <form className="space-y-5" onSubmit={handleLoginSubmit}>
+                  <LabeledField label="Email admin">
+                    <Input
+                      type="email"
+                      value={loginForm.email}
+                      onChange={(event) =>
+                        setLoginForm((current) => ({ ...current, email: event.target.value }))
+                      }
+                      placeholder="admin@maxwell.com"
+                      className="h-11 rounded-xl border-white/10 bg-[#141d2b] text-white placeholder:text-[#6D7788]"
+                      required
+                    />
+                  </LabeledField>
+                  <LabeledField label="Mot de passe">
+                    <div className="relative">
+                      <Input
+                        type={isLoginPasswordVisible ? 'text' : 'password'}
+                        value={loginForm.password}
+                        onChange={(event) =>
+                          setLoginForm((current) => ({ ...current, password: event.target.value }))
+                        }
+                        placeholder="Votre mot de passe admin"
+                        className="h-11 rounded-xl border-white/10 bg-[#141d2b] pr-11 text-white placeholder:text-[#6D7788]"
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#8A95A8] transition hover:text-white"
+                        onClick={() => setIsLoginPasswordVisible((current) => !current)}
+                        aria-label={
+                          isLoginPasswordVisible
+                            ? 'Masquer le mot de passe'
+                            : 'Afficher le mot de passe'
+                        }
+                      >
+                        {isLoginPasswordVisible ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </LabeledField>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-[#A9B3C2] transition hover:text-[#FFBE84]"
+                      onClick={() => {
+                        setIsForgotPasswordMode(true);
+                        setForgotPasswordStep('request');
+                        setResetSessionToken(null);
+                        setDevelopmentResetCode(null);
+                        setForgotPasswordForm((current) => ({
+                          ...current,
+                          email: current.email.trim() || loginForm.email.trim(),
+                          code: '',
+                          newPassword: '',
+                          confirmPassword: '',
+                        }));
+                      }}
+                    >
+                      Mot de passe oublié ?
+                    </button>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="h-11 w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45]"
+                    disabled={isSubmittingLogin}
+                  >
+                    {isSubmittingLogin ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Connexion...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-4 w-4" />
+                        Se connecter
+                      </>
+                    )}
+                  </Button>
+                </form>
+              )}
             </div>
           </div>
         </div>
@@ -728,19 +1126,19 @@ export default function AdminApp() {
   const authenticatedUser = session.user;
 
   const contentCollections = [
-    { label: 'Categories', value: categories.length, icon: Globe },
-    { label: 'Staff', value: staffItems.length, icon: Users },
+    { label: 'Catégories', value: categories.length, icon: Globe },
+    { label: 'Équipe', value: staffItems.length, icon: Users },
     { label: 'Galerie', value: galleryItems.length, icon: Images },
     { label: 'Partenaires', value: partners.length, icon: Sparkles },
   ];
 
   return (
     <div className="min-h-screen bg-[#08111A] text-white">
-      <div className="grid min-h-screen lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-        <aside className="border-b border-white/10 bg-[#0E1723] px-5 py-6 lg:sticky lg:top-0 lg:h-screen lg:self-start lg:overflow-y-auto lg:border-b-0 lg:border-r">
+      <div className="min-h-screen lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+        <aside className="hidden border-b border-white/10 bg-[#0E1723] px-4 py-5 sm:px-5 sm:py-6 lg:sticky lg:top-0 lg:block lg:h-screen lg:self-start lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div className="space-y-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#D7FF3B]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#D7FF3B]">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#FF8A1F]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#FF8A1F]">
                 <ShieldCheck className="h-4 w-4" />
                 Admin
               </div>
@@ -752,20 +1150,20 @@ export default function AdminApp() {
 
             <div className="rounded-2xl border border-white/10 bg-[#121D2A] p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#D7FF3B]/15 text-[#D7FF3B]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF8A1F]/15 text-[#FF8A1F]">
                   <UserRound className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-white">{authenticatedUser.email}</p>
                   <p className="text-sm capitalize text-[#8C97AB]">{authenticatedUser.role}</p>
                   <p className="mt-1 text-xs text-[#6F7A8E]">
-                    Derniere connexion: {formatDate(authenticatedUser.lastLoginAt)}
+                    Dernière connexion: {formatDate(authenticatedUser.lastLoginAt)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible">
+            <nav className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
               {sidebarSections.map(({ key, label, icon: Icon }) => {
                 const isActive = activeSection === key;
 
@@ -773,10 +1171,10 @@ export default function AdminApp() {
                   <button
                     key={key}
                     type="button"
-                    onClick={() => startTransition(() => setActiveSection(key))}
-                    className={`flex min-w-fit items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                    onClick={() => handleSectionSelect(key)}
+                    className={`flex min-w-fit shrink-0 snap-start items-center gap-3 whitespace-nowrap rounded-2xl px-3 py-2.5 text-left text-xs font-semibold transition sm:px-4 sm:py-3 sm:text-sm ${
                       isActive
-                        ? 'bg-[#D7FF3B] text-[#091018]'
+                        ? 'bg-[#FF8A1F] text-[#091018]'
                         : 'bg-[#121D2A] text-[#D2D7E0] hover:bg-[#182434]'
                     }`}
                   >
@@ -791,23 +1189,130 @@ export default function AdminApp() {
               type="button"
               variant="outline"
               className="h-11 w-full rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5"
-              onClick={handleLogout}
+              onClick={() => {
+                setIsMobileSidebarOpen(false);
+                void handleLogout();
+              }}
             >
               <LogOut className="h-4 w-4" />
-              Deconnexion
+              Déconnexion
             </Button>
           </div>
         </aside>
 
-        <main className="px-5 py-6 sm:px-8 lg:px-10">
+        <div className="sticky top-0 z-[450] border-b border-white/10 bg-[#0E1723]/95 backdrop-blur lg:hidden">
+          <div className="flex items-center justify-between px-4 py-3 sm:px-5">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#FF8A1F]">
+                Admin
+              </p>
+              <p className="truncate text-sm font-semibold text-white">{sectionLabels[activeSection]}</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 w-10 rounded-xl border-white/10 bg-transparent p-0 text-white hover:bg-white/5"
+              onClick={() => setIsMobileSidebarOpen((current) => !current)}
+              aria-label={isMobileSidebarOpen ? 'Fermer le menu admin' : 'Ouvrir le menu admin'}
+            >
+              {isMobileSidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+
+        <div
+          className={`fixed inset-0 z-[470] transition lg:hidden ${
+            isMobileSidebarOpen ? 'visible' : 'invisible'
+          }`}
+        >
+          <button
+            type="button"
+            className={`absolute inset-0 bg-black/60 transition-opacity ${
+              isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={() => setIsMobileSidebarOpen(false)}
+            aria-label="Fermer le panneau admin"
+          />
+
+          <aside
+            className={`absolute inset-y-0 left-0 w-[88vw] max-w-sm overflow-y-auto border-r border-white/10 bg-[#0E1723] p-4 shadow-2xl transition-transform duration-300 ${
+              isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <div className="space-y-5">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full bg-[#FF8A1F]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#FF8A1F]">
+                  <ShieldCheck className="h-4 w-4" />
+                  Admin
+                </div>
+                <div>
+                  <h1 className="text-2xl font-black tracking-tight text-white">Maxwell</h1>
+                  <p className="text-sm text-[#8C97AB]">Back-office v1</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#121D2A] p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF8A1F]/15 text-[#FF8A1F]">
+                    <UserRound className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-white">{authenticatedUser.email}</p>
+                    <p className="text-sm capitalize text-[#8C97AB]">{authenticatedUser.role}</p>
+                    <p className="mt-1 text-xs text-[#6F7A8E]">
+                      Dernière connexion: {formatDate(authenticatedUser.lastLoginAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <nav className="space-y-2">
+                {sidebarSections.map(({ key, label, icon: Icon }) => {
+                  const isActive = activeSection === key;
+
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleSectionSelect(key)}
+                      className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
+                        isActive
+                          ? 'bg-[#FF8A1F] text-[#091018]'
+                          : 'bg-[#121D2A] text-[#D2D7E0] hover:bg-[#182434]'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </button>
+                  );
+                })}
+              </nav>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 w-full rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                onClick={() => {
+                  setIsMobileSidebarOpen(false);
+                  void handleLogout();
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Déconnexion
+              </Button>
+            </div>
+          </aside>
+        </div>
+
+        <main className="px-4 py-5 sm:px-8 sm:py-6 lg:px-10">
           <div className="mb-8 flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-[#D7FF3B]">Cockpit</p>
-              <h2 className="text-3xl font-black tracking-tight text-white">
+              <p className="text-sm uppercase tracking-[0.2em] text-[#FF8A1F]">Cockpit</p>
+              <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
                 {sectionLabels[activeSection]}
               </h2>
               <p className="mt-1 text-sm text-[#8C97AB]">
-                API: <span className="font-mono text-[#D7FF3B]">{API_BASE_URL}</span>
+                API: <span className="break-all font-mono text-[#FF8A1F]">{API_BASE_URL}</span>
               </p>
             </div>
 
@@ -815,7 +1320,7 @@ export default function AdminApp() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                className="h-11 w-full rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
                 onClick={handleReturnToSite}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -824,7 +1329,7 @@ export default function AdminApp() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                className="h-11 w-full rounded-2xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
                 onClick={() => void refreshData()}
                 disabled={isLoadingData || isAuthenticating}
               >
@@ -949,3 +1454,6 @@ export default function AdminApp() {
     </div>
   );
 }
+
+
+

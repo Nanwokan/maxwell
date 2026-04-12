@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+﻿import type { Dispatch, SetStateAction } from 'react';
 import { Archive, CheckCheck, Mail, MessageCircle, Phone, Save, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -67,9 +67,9 @@ export function RegistrationsSection({
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {([
           ['all', 'Tous', registrationSummary.all],
-          ['new', 'A traiter', registrationSummary.new],
-          ['validated', 'Valides', registrationSummary.validated],
-          ['rejected', 'Refuses', registrationSummary.rejected],
+          ['new', 'À traiter', registrationSummary.new],
+          ['validated', 'Validés', registrationSummary.validated],
+          ['rejected', 'Refusés', registrationSummary.rejected],
           ['archived', 'Archives', registrationSummary.archived],
         ] as const).map(([value, label, count]) => {
           const isActive = registrationFilter === value;
@@ -81,7 +81,7 @@ export function RegistrationsSection({
               onClick={() => setRegistrationFilter(value)}
               className={`rounded-2xl border px-4 py-3 text-left transition ${
                 isActive
-                  ? 'border-[#D7FF3B]/50 bg-[#D7FF3B]/10 text-white'
+                  ? 'border-[#FF8A1F]/50 bg-[#FF8A1F]/10 text-white'
                   : 'border-white/10 bg-[#121D2A] text-[#D2D7E0] hover:bg-[#162131]'
               }`}
             >
@@ -93,7 +93,7 @@ export function RegistrationsSection({
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,1fr)]">
-        <Surface title="Pre-inscriptions" subtitle="Suivi des demandes d'essai">
+        <Surface title="Pré-inscriptions" subtitle="Suivi des demandes d'essai">
           <div className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
               <LabeledField label="Rechercher une inscription">
@@ -102,13 +102,13 @@ export function RegistrationsSection({
                   <Input
                     value={registrationSearch}
                     onChange={(event) => setRegistrationSearch(event.target.value)}
-                    placeholder="Nom enfant, parent, email, telephone, ville..."
+                    placeholder="Nom enfant, parent, email, téléphone, ville..."
                     className="h-11 rounded-xl border-white/10 bg-[#141d2b] pl-10 text-white"
                   />
                 </div>
               </LabeledField>
 
-              <LabeledField label="Statut affiche">
+              <LabeledField label="Statut affiché">
                 <select
                   value={registrationFilter}
                   onChange={(event) => setRegistrationFilter(event.target.value as RegistrationFilter)}
@@ -143,7 +143,7 @@ export function RegistrationsSection({
                     tabIndex={0}
                     className={`w-full rounded-2xl border p-4 text-left transition ${
                       isSelected
-                        ? 'border-[#D7FF3B]/45 bg-[#162131]'
+                        ? 'border-[#FF8A1F]/45 bg-[#162131]'
                         : 'border-white/10 bg-[#101928] hover:bg-[#131E2D]'
                     }`}
                   >
@@ -162,7 +162,7 @@ export function RegistrationsSection({
                         onChange={(event) =>
                           onUpdateRegistrationStatus(registrationId, event.target.value as Registration['status'])
                         }
-                        className={`${selectClassName} max-w-[180px]`}
+                        className={`${selectClassName} w-full sm:w-auto sm:max-w-[180px]`}
                       >
                         {registrationStatuses.map((status) => (
                           <option key={status} value={status}>
@@ -189,13 +189,13 @@ export function RegistrationsSection({
               <div className="border-b border-white/10 pb-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-[#D7FF3B]">Dossier inscription</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-[#FF8A1F]">Dossier inscription</p>
                     <h4 className="mt-2 text-2xl font-black text-white">{selectedRegistration.childName}</h4>
                     <p className="mt-1 text-sm text-[#8C97AB]">
                       {selectedRegistration.categoryCode} · {selectedRegistration.childAge} ans
                     </p>
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#D7FF3B]">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#FF8A1F]">
                     {registrationStatusLabels[selectedRegistration.status]}
                   </span>
                 </div>
@@ -203,7 +203,7 @@ export function RegistrationsSection({
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button
                     type="button"
-                    className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+                    className="w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45] sm:w-auto"
                     onClick={() => onUpdateRegistrationStatus(extractId(selectedRegistration), 'validated')}
                     disabled={selectedRegistration.status === 'validated'}
                   >
@@ -213,7 +213,7 @@ export function RegistrationsSection({
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                    className="w-full rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
                     onClick={() => onUpdateRegistrationStatus(extractId(selectedRegistration), 'rejected')}
                     disabled={selectedRegistration.status === 'rejected'}
                   >
@@ -222,7 +222,7 @@ export function RegistrationsSection({
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                    className="w-full rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
                     onClick={() => onUpdateRegistrationStatus(extractId(selectedRegistration), 'archived')}
                     disabled={selectedRegistration.status === 'archived'}
                   >
@@ -232,11 +232,11 @@ export function RegistrationsSection({
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5"
+                    className="w-full rounded-xl border-white/10 bg-transparent text-white hover:bg-white/5 sm:w-auto"
                     onClick={() => onUpdateRegistrationStatus(extractId(selectedRegistration), 'new')}
                     disabled={selectedRegistration.status === 'new'}
                   >
-                    Remettre a traiter
+                    Remettre à traiter
                   </Button>
                 </div>
               </div>
@@ -251,23 +251,23 @@ export function RegistrationsSection({
                 <div className="rounded-2xl border border-white/10 bg-[#111C2A] p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-[#6F7A8E]">Logistique</p>
                   <p className="mt-2 font-semibold text-white">
-                    {selectedRegistration.city || 'Ville non renseignee'}
+                      {selectedRegistration.city || 'Ville non renseignée'}
                   </p>
-                  <p className="mt-1 text-sm text-[#8C97AB]">Recu le {formatDate(selectedRegistration.createdAt)}</p>
+                  <p className="mt-1 text-sm text-[#8C97AB]">Reçu le {formatDate(selectedRegistration.createdAt)}</p>
                 </div>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <a
                   href={`tel:${selectedRegistration.parentPhone.replace(/\s+/g, '')}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5"
+                  className="inline-flex w-full items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5 sm:w-auto"
                 >
                   <Phone className="h-4 w-4" />
                   Appeler
                 </a>
                 <a
-                  href={`mailto:${selectedRegistration.parentEmail}?subject=${encodeURIComponent(`Pre-inscription ${selectedRegistration.childName}`)}`}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5"
+                  href={`mailto:${selectedRegistration.parentEmail}?subject=${encodeURIComponent(`Pré-inscription ${selectedRegistration.childName}`)}`}
+                  className="inline-flex w-full items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5 sm:w-auto"
                 >
                   <Mail className="h-4 w-4" />
                   Email
@@ -277,7 +277,7 @@ export function RegistrationsSection({
                     href={createWhatsAppLink(selectedRegistration.parentPhone) ?? '#'}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5"
+                    className="inline-flex w-full items-center gap-2 rounded-xl border border-white/10 bg-transparent px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/5 sm:w-auto"
                   >
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
@@ -288,7 +288,7 @@ export function RegistrationsSection({
               <div className="mt-5 rounded-2xl border border-white/10 bg-[#111C2A] p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-[#6F7A8E]">Message du parent</p>
                 <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[#D8DCE4]">
-                  {selectedRegistration.message || 'Aucun message ajoute a la demande.'}
+                  {selectedRegistration.message || 'Aucun message ajouté à la demande.'}
                 </p>
               </div>
 
@@ -300,7 +300,7 @@ export function RegistrationsSection({
                   </div>
                   <Button
                     type="button"
-                    className="rounded-xl bg-[#D7FF3B] text-[#091018] hover:bg-[#e3ff72]"
+                    className="w-full rounded-xl bg-[#FF8A1F] text-[#091018] hover:bg-[#FF9F45] sm:w-auto"
                     onClick={onSaveRegistrationNotes}
                     disabled={!hasRegistrationNotesChanges || isSavingRegistrationNotes}
                   >
@@ -312,13 +312,13 @@ export function RegistrationsSection({
                   value={registrationNotesDraft}
                   onChange={(event) => setRegistrationNotesDraft(event.target.value)}
                   className="min-h-32 rounded-xl border-white/10 bg-[#141d2b] text-white"
-                  placeholder="Ex: parent rappelle mardi, essai a confirmer, dossier a completer..."
+                  placeholder="Ex: parent rappelle mardi, essai à confirmer, dossier à compléter..."
                 />
               </div>
             </>
           ) : (
             <EmptyState
-              title="Selectionne une pre-inscription"
+              title="Sélectionne une pré-inscription"
               description="Choisis une demande dans la liste pour afficher le dossier complet et agir dessus."
             />
           )}
@@ -327,4 +327,6 @@ export function RegistrationsSection({
     </div>
   );
 }
+
+
 

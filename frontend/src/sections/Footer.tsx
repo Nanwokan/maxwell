@@ -1,4 +1,4 @@
-import { Facebook, Mail, Music2 } from 'lucide-react';
+﻿import { Facebook, Mail, Music2 } from 'lucide-react';
 
 import { navigateToAdminRoute } from '../lib/app-route';
 import {
@@ -24,14 +24,14 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
   const footerLinks = {
     club: [
       { label: 'Le Centre', href: '#le-centre' },
-      { label: 'Categories', href: '#categories' },
-      { label: 'Equipe', href: '#equipe' },
+      { label: 'Catégories', href: '#categories' },
+      { label: 'Équipe', href: '#equipe' },
       { label: 'Galerie', href: '#galerie' },
     ],
     pratique: [
       { label: 'Inscription', href: '#inscription' },
       { label: 'Contact', href: '#contact' },
-      { label: "Journee d'entrainement", href: '#journee' },
+      { label: "Journée d'entraînement", href: '#journee' },
     ],
     legal: settings.legalLinks,
   };
@@ -62,9 +62,12 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
       <div className="px-5 sm:px-8 lg:px-[8vw]">
         <div className="mb-12 flex flex-col border-b border-white/5 pb-12 lg:mb-0 lg:flex-row lg:items-center lg:justify-between">
           <div className="mb-6 flex items-center gap-3 lg:mb-0">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent">
-              <span className="text-xl font-bold text-[#0B0F17]">{settings.clubShortName}</span>
-            </div>
+            <img
+              src="/images/logo-maxwell.png"
+              alt={settings.clubName}
+              className="h-12 w-12 rounded-lg object-contain"
+            />
+
             <div>
               <span className="block text-xl font-bold text-white">{brandLabel}</span>
               <span className="text-xs text-[#A9B3C2]">{settings.tagline}</span>
@@ -121,7 +124,7 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
           </div>
 
           <div className="col-span-2 lg:col-span-1">
-            <h4 className="mb-4 font-semibold text-white">Legal</h4>
+            <h4 className="mb-4 font-semibold text-white">Légal</h4>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
                 <li key={`${link.label}-${link.safeUrl}`}>
@@ -141,7 +144,7 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
 
         <div className="flex flex-col gap-4 border-t border-white/5 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-[#A9B3C2]">
-            © {currentYear} {settings.clubName}. Tous droits reserves.
+            © {currentYear} {settings.clubName}. Tous droits réservés.
           </p>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <button
@@ -151,7 +154,7 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
             >
               Accès admin
             </button>
-            <p className="text-xs text-[#A9B3C2]">Crée par Nanwokan Ouattara</p>
+            <p className="text-xs text-[#A9B3C2]">Créé par Nanwokan Ouattara</p>
           </div>
         </div>
       </div>
@@ -160,3 +163,5 @@ const Footer = ({ settings = defaultPublicHomepageData.settings }: FooterProps) 
 };
 
 export default Footer;
+
+

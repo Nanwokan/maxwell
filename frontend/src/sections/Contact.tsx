@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+﻿import { useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Facebook, Mail, MapPin, Music2, Phone, Send } from 'lucide-react';
@@ -57,7 +57,7 @@ const Contact = ({ settings = defaultPublicHomepageData.settings }: ContactProps
         message: formData.message,
       });
 
-      toast.success('Message envoye avec succes. Nous vous contacterons bientot.');
+      toast.success('Message envoyé avec succès. Nous vous contacterons bientôt.');
       setFormData(initialFormData);
     } catch (error) {
       const message =
@@ -164,7 +164,7 @@ const Contact = ({ settings = defaultPublicHomepageData.settings }: ContactProps
               />
               <input
                 type="tel"
-                placeholder="Telephone"
+                placeholder="Téléphone"
                 value={formData.phone}
                 onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
                 className="input-dark w-full"
@@ -242,3 +242,5 @@ const Contact = ({ settings = defaultPublicHomepageData.settings }: ContactProps
 };
 
 export default Contact;
+
+

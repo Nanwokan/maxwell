@@ -29,6 +29,13 @@ Copy `.env.example` to `.env` and configure:
 - `RATE_LIMIT_ENABLED`
 - `SEED_ADMIN_EMAIL`
 - `SEED_ADMIN_PASSWORD`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASSWORD`
+- `SMTP_FROM_EMAIL`
+- `SMTP_FROM_NAME`
 
 On startup, the API automatically creates or updates the admin account from
 `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD` (role forced to `super_admin`).
@@ -55,6 +62,9 @@ For destructive seed:
 
 - `POST /api/admin/auth/login`
 - `POST /api/admin/auth/logout`
+- `POST /api/admin/auth/forgot-password`
+- `POST /api/admin/auth/verify-reset-code`
+- `POST /api/admin/auth/reset-password`
 - `GET /api/admin/me`
 - `GET /api/admin/status`
 - `GET/PATCH /api/admin/site-settings`
